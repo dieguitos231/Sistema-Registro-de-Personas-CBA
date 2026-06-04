@@ -4,7 +4,7 @@ import java.util.Locale;
 
 public class Usuario {
     public String iniciarSesion(String correo_electronico, String password){
-        String consulta="SELECT rol FROM usuario WHERE correo_electronico=? AND password=?";
+        String consulta="SELECT rol FROM usuario WHERE correo_electronico=? AND password= crypt(?,password);  ";
         try{
             Connection con = ConexionDB.getConnection();
             PreparedStatement query = con.prepareStatement(consulta);

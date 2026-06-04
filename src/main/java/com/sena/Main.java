@@ -10,10 +10,11 @@ import java.awt.Font;
 
 public class Main {
     //PANELES
-
     private JFrame Login;
     private JFrame PanelAdmin;
+    private JFrame PanelUsuarios;
     private JFrame GestionUsuarios;
+    private JFrame CrearUsuario;
     Color colorSena = new Color(57, 169, 0);
     Color colorSecundario = new Color(136,231,136);
     Color azulclaro=new Color(87,185,255);
@@ -39,8 +40,6 @@ public class Main {
             System.err.println("Error al conectar a la base de datos: " + e.getMessage());
         }
         Login();
-//        crud consultas = new crud();
-//        consultas.insertarDatos(12345,"admin@example","admin","Administrador");
     }
     private void Login(){
         JTextField textEmail;
@@ -68,7 +67,7 @@ public class Main {
 
 
 
-        //-------CONFIGURACION CORREO ELECTRONICO------------
+        //-------Configuracion correo electronico------------
         //-------- LABEL --------------------------
         JLabel lblCorreo=new JLabel("Correo electronico");
         lblCorreo.setBounds(50,120,150,30);
@@ -108,8 +107,6 @@ public class Main {
                 Usuario usuario=new Usuario();
                 String getRol=usuario.iniciarSesion(email,password);
                 if(getRol.equals("administrador")){
-                    email="";
-                    password="";
                     PanelAdmin();
                 }
             }
@@ -119,46 +116,46 @@ public class Main {
         JButton btnPanelUsuario;
         JButton btnPanelRegistros;
         JButton btnCloseSession;
+        //Titulo Ventana
         PanelAdmin=new JFrame();
         PanelAdmin.setTitle("Panel Admin");
         PanelAdmin.setSize(500,400);
         PanelAdmin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         PanelAdmin.setLayout(null);
 
-
-        //TITULO VENTANA
-        JLabel textTitle=new JLabel("PANEL ADMINISTRATIVO");
-        textTitle.setBounds(100,20,400,100);
+        //Titulo
+        JLabel textTitle=new JLabel("Panel Administrativo");
+        textTitle.setBounds(120,20,400,100);
         textTitle.setForeground(Color.black);
         textTitle.setFont(new Font("Serif",Font.BOLD,24));
         PanelAdmin.add(textTitle);
 
-        // BOTON PANEL  USUARIOS
-        btnPanelUsuario=new JButton("PANEL USUARIOS");
-        btnPanelUsuario.setBounds(150,120,150,40);
-        btnPanelUsuario.setBackground(Color.RED);
+        // Boton panel usuarios
+        btnPanelUsuario=new JButton("Panel Usuario");
+        btnPanelUsuario.setBounds(120,120,200,40);
+        btnPanelUsuario.setBackground(Color.ORANGE);
         btnPanelUsuario.setForeground(Color.black);
         PanelAdmin.add(btnPanelUsuario);
 
-        btnPanelUsuario.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event){
-                GestionUsuarios();
-            }
-        });
-
-        //BOTON PANEL REGISTROS
-        btnPanelRegistros=new JButton("PANEL REGISTROS");
-        btnPanelRegistros.setBounds(150,180,150,40);
+        //Boton panel registros
+        btnPanelRegistros=new JButton("Historial Ingresos");
+        btnPanelRegistros.setBounds(120,180,200,40);
         btnPanelRegistros.setBackground(azulclaro);
         btnPanelRegistros.setForeground(Color.BLACK);
         PanelAdmin.add(btnPanelRegistros);
-        //BOTON CERRAR SESION
-        btnCloseSession=new JButton("CERRAR SESION");
-        btnCloseSession.setBounds(120,300,200,40);
+
+        //Boton Cerrar Sesion
+        btnCloseSession=new JButton("Cerrar Sesion");
+        btnCloseSession.setBounds(150,300,150,35);
         btnCloseSession.setBackground(Color.RED);
         btnCloseSession.setForeground(Color.white);
         PanelAdmin.add(btnCloseSession);
 
+        btnPanelUsuario.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                PanelUsuarios();
+            }
+        });
         btnCloseSession.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 PanelAdmin.dispose();
@@ -168,58 +165,109 @@ public class Main {
 
         PanelAdmin.setVisible(true);
     }
+    private void PanelUsuarios(){
+        JButton btnReturn;
+        JButton btnGestionUsuario;
+        JButton btnMostrarUsuario;
+        JButton btnBuscarUsuario;
+        //Titulo Ventana
+        PanelUsuarios=new JFrame();
+        PanelUsuarios.setTitle("Panel Usuarios");
+        PanelUsuarios.setSize(500,400);
+        PanelUsuarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        PanelUsuarios.setLayout(null);
+        //Boton Volver
+        btnReturn=new JButton("Volver");
+        btnReturn.setBounds(40,20,100,30);
+        btnReturn.setBackground(Color.RED);
+        btnReturn.setForeground(Color.WHITE);
+        PanelUsuarios.add(btnReturn);
+        //Titulo
+        JLabel textTitle=new JLabel("Panel Usuarios");
+        textTitle.setBounds(150,40,200,100);
+        textTitle.setFont(new Font("Serif",Font.BOLD,24));
+        PanelUsuarios.add(textTitle);
+        //Boton gestion de usuario
+        btnGestionUsuario=new JButton("Gestion Usuario");
+        btnGestionUsuario.setBounds(120,120,200,40);
+        btnGestionUsuario.setBackground(colorSecundario);
+        PanelUsuarios.add(btnGestionUsuario);
+        //Boton mostrar Usuarios
+        btnMostrarUsuario=new JButton("Mostrar Usuario");
+        btnMostrarUsuario.setBounds(120,180,200,40);
+        btnMostrarUsuario.setBackground(Color.YELLOW);
+        PanelUsuarios.add(btnMostrarUsuario);
+        //Boton mostrar info de un usuario
+        btnBuscarUsuario=new JButton("Buscar Usuario");
+        btnBuscarUsuario.setBounds(120,240,200,40);
+        btnBuscarUsuario.setBackground(Color.RED);
+        PanelUsuarios.add(btnBuscarUsuario);
+
+        btnGestionUsuario.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                GestionUsuarios();
+            }
+        });
+        PanelUsuarios.setVisible(true);
+    }
     private void GestionUsuarios(){
+        JButton btnReturn;
         JButton btnCreateUser;
         JButton btnUpdateUser;
         JButton btnDeleteUser;
-        JButton btnReturn;
 
-        //TITULO
+
+        //Titulo Ventana
         GestionUsuarios=new JFrame();
         GestionUsuarios.setTitle("Panel Gestion de usuarios");
         GestionUsuarios.setSize(400,400);
         GestionUsuarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         GestionUsuarios.setLayout(null);
 
-        //BOTON VOLVER
+        //Boton Volver
         btnReturn=new JButton("VOLVER");
-        btnReturn.setBounds(250,40,100,40);
+        btnReturn.setBounds(40,20,100,30);
         btnReturn.setBackground(Color.RED);
         btnReturn.setForeground(Color.WHITE);
         GestionUsuarios.add(btnReturn);
 
-        //BOTON CREAR USUARIO
-        btnCreateUser=new JButton("CREAR NUEVO USUARIO");
-        btnCreateUser.setBounds(100,100,200,40);
-        btnCreateUser.setBackground(colorSena);
+        //Titulo Principal
+        JLabel textTitle=new JLabel("Gestion de Usuarios");
+        textTitle.setBounds(150,40,400,100);
+        textTitle.setFont(new Font("Serif",Font.BOLD,24));
+        GestionUsuarios.add(textTitle);
+
+        //Boton Crear Usuario
+        btnCreateUser=new JButton("Crear Usuario");
+        btnCreateUser.setBounds(150,120,200,40);
+        btnCreateUser.setBackground(colorSecundario);
         btnCreateUser.setForeground(Color.black);
         GestionUsuarios.add(btnCreateUser);
-        btnCreateUser.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event){
-//                CrearUsuario();
-            }
-        });
 
-        //BOTON MODIFICAR USUARIO
-        btnUpdateUser=new JButton("MODIFICAR USUARIO");
-        btnUpdateUser.setBounds(100,150,200,40);
+        //Boton Modificar Usuario
+        btnUpdateUser=new JButton("Modificar Usuario");
+        btnUpdateUser.setBounds(150,180,200,40);
         btnUpdateUser.setBackground(Color.YELLOW);
         btnUpdateUser.setForeground(Color.black);
         GestionUsuarios.add(btnUpdateUser);
 
+        //Boton Eliminar Usuario
+        btnDeleteUser=new JButton("Eliminar Usuario");
+        btnDeleteUser.setBounds(150,240,200,40);
+        btnDeleteUser.setBackground(Color.RED);
+        btnDeleteUser.setForeground(Color.black);
+        GestionUsuarios.add(btnDeleteUser);
+
+        btnCreateUser.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                CrearUsuario();
+            }
+        });
         btnUpdateUser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
 //                BuscarUsuario();
             }
         });
-
-        //BOTON ELIMINAR USUARIO
-        btnDeleteUser=new JButton("ELIMINAR USUARIO");
-        btnDeleteUser.setBounds(100,200,200,40);
-        btnDeleteUser.setBackground(Color.RED);
-        btnDeleteUser.setForeground(Color.black);
-        GestionUsuarios.add(btnDeleteUser);
-
         btnDeleteUser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
 //                BuscarUsuario();
@@ -227,5 +275,127 @@ public class Main {
         });
 
         GestionUsuarios.setVisible(true);
+    }
+    private void CrearUsuario(){
+        JComboBox<String> tipoId;
+        JTextField numeroId;
+        JTextField nombre;
+        JTextField apellido;
+        JTextField correo_electronico;
+        JComboBox<String> rol;
+
+        JButton create;
+        JButton cancel;
+
+        CrearUsuario=new JFrame();
+        CrearUsuario.setTitle("Crear usuario");
+        CrearUsuario.setSize(500,400);
+        CrearUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        CrearUsuario.setLayout(null);
+
+        //TITULO
+        JLabel title=new JLabel("Crear Nuevo Usuario");
+        title.setBounds(80,20,300,30);
+        title.setForeground(colorSena);
+        title.setFont(new Font("Serif",Font.BOLD,24));
+        CrearUsuario.add(title);
+
+        //TIPO ID
+        //LABEL
+        JLabel lblTipoId=new JLabel("T.I");
+        lblTipoId.setBounds(80,60,50,30);
+        CrearUsuario.add(lblTipoId);
+        //INPUT
+        String[] tipo={
+                "CC",
+                "TI",
+                "Pasaporte",
+                "CE",
+                "PPT"
+        };
+        tipoId=new JComboBox<>(tipo);
+        tipoId.setBounds(80,100,50,30);
+        CrearUsuario.add(tipoId);
+
+        //NUMERO DE IDENTIFICACION
+        //LABEL
+        JLabel lblNumeroId=new JLabel("Numero de identificación");
+        lblNumeroId.setBounds(140,60,150,30);
+        CrearUsuario.add(lblNumeroId);
+        //INPUT
+        numeroId=new JTextField();
+        numeroId.setBounds(140,100,150,30);
+        CrearUsuario.add(numeroId);
+
+        //NOMBRE
+        //LABEL
+        JLabel lblNombre=new JLabel("Nombre");
+        lblNombre.setBounds(80,140,150,30);
+        CrearUsuario.add(lblNombre);
+        //INPUT
+        nombre=new JTextField();
+        nombre.setBounds(80,180,150,30);
+        CrearUsuario.add(nombre);
+        //Apellidos
+        //LABEL
+        JLabel lblApellidos=new JLabel("Apellidos");
+        lblApellidos.setBounds(250,140,150,30);
+        CrearUsuario.add(lblApellidos);
+        //INPUT
+        apellido=new JTextField();
+        apellido.setBounds(250,180,150,30);
+        CrearUsuario.add(apellido);
+
+        //Email
+        //LABEL
+        JLabel lblEmail=new JLabel("Correo electronico");
+        lblEmail.setBounds(80,220,150,30);
+        CrearUsuario.add(lblEmail);
+        //INPUT
+        correo_electronico=new JTextField();
+        correo_electronico.setBounds(80,250,150,30);
+        CrearUsuario.add(correo_electronico);
+
+        //ROL
+        //LABEL
+        JLabel lblRol=new JLabel("Rol");
+        lblRol.setBounds(250,220,50,30);
+        CrearUsuario.add(lblRol);
+        //INPUT
+        String[] opcionesRol = {
+                "Aprendiz",
+                "Funcionario",
+                "Administrador"
+        };
+        rol=new JComboBox<>(opcionesRol);
+        rol.setBounds(250,250,100,30);
+        CrearUsuario.add(rol);
+
+        //CREAR
+        create=new JButton("CREAR");
+        create.setBounds(330,300,100,30);
+        create.setBackground(azulclaro);
+        CrearUsuario.add(create);
+
+        //CANCELAR
+        cancel=new JButton("CANCELAR");
+        cancel.setBounds(200,300,100,30);
+        cancel.setBorder(null);
+        CrearUsuario.add(cancel);
+
+        create.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                String tipo=tipoId.getSelectedItem().toString();
+                //Falta convertir el string a entero
+                String nombres=nombre.getText();
+                String apellidos=apellido.getText();
+                String email=correo_electronico.getText();
+                String rolAsignado=rol.getSelectedItem().toString();
+                Admin admin=new Admin();
+                admin.crearUsuario(tipo,1032,nombres,apellidos,rolAsignado,email,"admin");
+            }
+        });
+
+        CrearUsuario.setVisible(true);
     }
 }
