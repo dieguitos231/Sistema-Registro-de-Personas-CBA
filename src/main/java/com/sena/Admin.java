@@ -1,26 +1,64 @@
 package com.sena;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Admin {
-//    //Es string pero por el momento esta en void
-    public void mostrarUsuarios(String tipo_documento, int n_documento, String nombres,String apellidos,String fecha_creacion){
-        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres, detalle_usuario.apellidos, detalle_usuario.fecha_creacion FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento";
+    public List<Object[]> mostrarAprendices(){
+        List<Object[]> listaAprendizes = new ArrayList<>();
+        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres, detalle_usuario.apellidos, detalle_usuario.fecha_creacion FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.rol = 'Aprendiz'";
         try{
             Connection con = ConexionDB.getConnection();
-            PreparedStatement query = con.prepareStatement(consulta);
-            query.setString(1,tipo_documento);
-            query.setInt(2,n_documento);
-            query.setString(3, nombres);
-            query.setString(4, apellidos);
-            query.setString(5, fecha_creacion);
-            query.executeQuery();
+            PreparedStatement ps1 = con.prepareStatement(consulta);
+            ResultSet rs = ps1.executeQuery();
+            while(rs.next()){
+                Object[] arreglo = new Object[5];
+
+                arreglo[0] = rs.getString("tipo_documento");
+                arreglo[1] = rs.getInt("n_documento");
+                arreglo[2] = rs.getString("nombres");
+                arreglo[3] = rs.getString("apellidos");
+                arreglo[4] = rs.getString("fecha_creacion");
+
+                listaAprendizes.add(arreglo);
+                //System.out.println(arreglo[0] + " | " + " | "+ arreglo[1] + " | " + arreglo[2] + " | " + arreglo[3] + " | " + arreglo[4]);
+            }
         }
         catch (SQLException e){
-            System.out.println("Error al obtener el detalle de usuario" +  e.getMessage() );
+            System.out.println("Error al obtener el detalle de Aprendiz" +  e.getMessage() );
         }
+        return listaAprendizes;
+    }
+    public List<Object[]> mostrarFuncionarios(){
+        List<Object[]> listaFuncionarios = new ArrayList<>();
+        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres, detalle_usuario.apellidos, detalle_usuario.fecha_creacion FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.rol = 'Funcionario'";
+
+        try {
+            Connection con = ConexionDB.getConnection();
+            PreparedStatement ps2 = con.prepareStatement(consulta);
+            ResultSet rs = ps2.executeQuery();
+            System.out.println("Lista de Funcionarios");
+            while (rs.next()) {
+                Object[] arreglo = new Object[5];
+
+                arreglo[0] = rs.getString("tipo_documento");
+                arreglo[1] = rs.getInt("n_documento");
+                arreglo[2] = rs.getString("nombres");
+                arreglo[3] = rs.getString("apellidos");
+                arreglo[4] = rs.getString("fecha_creacion");
+
+                listaFuncionarios.add(arreglo);
+                //System.out.println(arreglo[0] + " | " + " | "+ arreglo[1] + " | " + arreglo[2] + " | " + arreglo[3] + " | " + arreglo[4]);
+            }
+        }
+        catch (SQLException e){
+            System.out.println("Error al obtener el detalle de Funcionario" +  e.getMessage() );
+        }
+        return listaFuncionarios;
     }
     public void crearUsuario(String tipo_documento,int n_documento,String nombres,String apellidos,String rol, String correo_electronico, String password){
         String query ="INSERT INTO usuario(n_documento,correo_electronico, password, rol) VALUES (?,?,crypt(?,gen_salt('bf')),?)";

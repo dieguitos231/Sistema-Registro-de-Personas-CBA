@@ -9,12 +9,19 @@ import java.awt.EventQueue;
 import java.awt.Font;
 
 public class Main {
-    //PANELES
+    //Paneles
     private JFrame Login;
     private JFrame PanelAdmin;
+    private JFrame MostrarUsuario;
     private JFrame PanelUsuarios;
+    //Paneles Asociados a Gestion de usuarios
     private JFrame GestionUsuarios;
     private JFrame CrearUsuario;
+    private JFrame ActualizarUsuario;
+    private JFrame ModificarUsuario;
+    //Complementos
+    private JFrame BuscarUsuario;
+    //Colores
     Color colorSena = new Color(57, 169, 0);
     Color colorSecundario = new Color(136,231,136);
     Color azulclaro=new Color(87,185,255);
@@ -31,7 +38,7 @@ public class Main {
         });
     }
     public Main(){
-        // Probamos que la nueva clase de conexión funcione correctamente
+        // Comprobamos la conexión a la base de datos
         try (Connection conexion = ConexionDB.getConnection()) {
             if (conexion != null) {
                 System.out.println("¡Conexión establecida con éxito usando ConexionDB!");
@@ -42,59 +49,56 @@ public class Main {
         Login();
     }
     private void Login(){
+        /**
+         * Declaracion de variables
+         **/
+        //Labels
+        JLabel titulo;
+        JLabel correo;
+        JLabel password;
+        //Inputs
         JTextField textEmail;
         JPasswordField textPassword;
         JButton btnIngresar;
         Login = new JFrame();
-        //-----------CONFIGURACION VENTANA-------------------------
+        //Configuracion Ventana
         Login.setTitle("Sistema de Ingreso SENA");
         Login.setSize(500,400);
-        //Accion de que operacion se realizara al salir de la aplicacion.
         Login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //Define el diseño de como se organizara cada componente
         Login.setLayout(null);
+        Login.setResizable(false);
         Login.getContentPane().setBackground(colorSena);
 
-        //---------------------------------------------------------
+        //Titulo Principal
+        titulo=new JLabel("Inicio de Sesion ");
+        titulo.setForeground(Color.white);
+        titulo.setFont(new Font("Serif",Font.BOLD,24));
+        titulo.setBounds(150,20,200,100); //Posicion
+        Login.add(titulo);
 
-
-        //------Titulo ---------
-        JLabel lblTitle=new JLabel("Inicio de Sesion ");
-        lblTitle.setBounds(150,20,200,100);
-        lblTitle.setForeground(Color.white);
-        lblTitle.setFont(new Font("Serif",Font.BOLD,24));
-        Login.add(lblTitle);
-
-
-
-        //-------Configuracion correo electronico------------
-        //-------- LABEL --------------------------
-        JLabel lblCorreo=new JLabel("Correo electronico");
-        lblCorreo.setBounds(50,120,150,30);
-        //Cambiar color al texto
-        lblCorreo.setForeground(Color.white);
-        lblCorreo.setHorizontalAlignment(JLabel.CENTER);
-        Login.add(lblCorreo);
-        //------ INPUT ---------------------------
+        //Correo
+        correo=new JLabel("Correo electronico");
+        correo.setForeground(Color.white);
+        correo.setHorizontalAlignment(JLabel.CENTER);
+        correo.setBounds(50,120,150,30);
+        Login.add(correo);
 
         textEmail=new JTextField();
         textEmail.setBounds(200,120,200,30);
         Login.add(textEmail);
 
-        //--------CONFIGURACION PASSWORD-------------
-        //---------LABEL-----------------------------
-        JLabel lblPassword=new JLabel("Password:");
-        lblPassword.setBounds(50,180,200,30);
-        lblPassword.setHorizontalAlignment(JLabel.CENTER);
-        lblPassword.setForeground(Color.WHITE);
-        Login.add(lblPassword);
+        //Password
+        password=new JLabel("Password:");
+        password.setHorizontalAlignment(JLabel.CENTER);
+        password.setForeground(Color.WHITE);
+        password.setBounds(50,180,200,30);
+        Login.add(password);
 
-        //-------INPUT-----------------------------
         textPassword=new JPasswordField();
         textPassword.setBounds(200,180,200,30);
         Login.add(textPassword);
 
-        //---------CONFIGURACION BUTTON INGRESAR--------
+        //Boton ingresar
         btnIngresar=new JButton("Ingresar");
         btnIngresar.setBounds(150,220,150,40);
         btnIngresar.setBackground(colorSecundario);
@@ -105,14 +109,25 @@ public class Main {
                 String email=textEmail.getText();
                 String password=textPassword.getText();
                 Usuario usuario=new Usuario();
-                String getRol=usuario.iniciarSesion(email,password);
-                if(getRol.equals("administrador")){
-                    PanelAdmin();
+                String rol=usuario.iniciarSesion(email,password);
+                switch (rol){
+                    case "aprendiz":
+                        //Panel aprendiz
+                        break;
+                    case "funcionario":
+                        //Panel funcionario
+                        break;
+                    case "administrador":
+                        PanelAdmin();
+                        break;
                 }
             }
         });
     }
     private void PanelAdmin(){
+        //Labels
+        JLabel titulo;
+        //Botones
         JButton btnPanelUsuario;
         JButton btnPanelRegistros;
         JButton btnCloseSession;
@@ -122,33 +137,32 @@ public class Main {
         PanelAdmin.setSize(500,400);
         PanelAdmin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         PanelAdmin.setLayout(null);
+        PanelAdmin.setResizable(false);
 
         //Titulo
-        JLabel textTitle=new JLabel("Panel Administrativo");
-        textTitle.setBounds(120,20,400,100);
-        textTitle.setForeground(Color.black);
-        textTitle.setFont(new Font("Serif",Font.BOLD,24));
-        PanelAdmin.add(textTitle);
+        titulo=new JLabel("Panel Administrativo");
+        titulo.setForeground(Color.black);
+        titulo.setFont(new Font("Serif",Font.BOLD,24));
+        titulo.setBounds(120,20,400,100);
+        PanelAdmin.add(titulo);
 
         // Boton panel usuarios
         btnPanelUsuario=new JButton("Panel Usuario");
-        btnPanelUsuario.setBounds(120,120,200,40);
         btnPanelUsuario.setBackground(Color.ORANGE);
-        btnPanelUsuario.setForeground(Color.black);
+        btnPanelUsuario.setBounds(120,120,200,40);
         PanelAdmin.add(btnPanelUsuario);
 
         //Boton panel registros
         btnPanelRegistros=new JButton("Historial Ingresos");
-        btnPanelRegistros.setBounds(120,180,200,40);
         btnPanelRegistros.setBackground(azulclaro);
-        btnPanelRegistros.setForeground(Color.BLACK);
+        btnPanelRegistros.setBounds(120,180,200,40);
         PanelAdmin.add(btnPanelRegistros);
 
         //Boton Cerrar Sesion
         btnCloseSession=new JButton("Cerrar Sesion");
-        btnCloseSession.setBounds(150,300,150,35);
         btnCloseSession.setBackground(Color.RED);
         btnCloseSession.setForeground(Color.white);
+        btnCloseSession.setBounds(150,300,150,35);
         PanelAdmin.add(btnCloseSession);
 
         btnPanelUsuario.addActionListener(new ActionListener() {
@@ -161,46 +175,52 @@ public class Main {
                 PanelAdmin.dispose();
             }
         });
-
-
         PanelAdmin.setVisible(true);
     }
     private void PanelUsuarios(){
+        //labels
+        JLabel titulo;
+        //Botones
         JButton btnReturn;
         JButton btnGestionUsuario;
         JButton btnMostrarUsuario;
         JButton btnBuscarUsuario;
         //Titulo Ventana
-        PanelUsuarios=new JFrame();
+        PanelUsuarios = new JFrame();
         PanelUsuarios.setTitle("Panel Usuarios");
         PanelUsuarios.setSize(500,400);
         PanelUsuarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         PanelUsuarios.setLayout(null);
+
         //Boton Volver
         btnReturn=new JButton("Volver");
         btnReturn.setBounds(40,20,100,30);
         btnReturn.setBackground(Color.RED);
         btnReturn.setForeground(Color.WHITE);
         PanelUsuarios.add(btnReturn);
+
         //Titulo
-        JLabel textTitle=new JLabel("Panel Usuarios");
-        textTitle.setBounds(150,40,200,100);
-        textTitle.setFont(new Font("Serif",Font.BOLD,24));
-        PanelUsuarios.add(textTitle);
+        titulo=new JLabel("Panel Usuarios");
+        titulo.setFont(new Font("Serif",Font.BOLD,24));
+        titulo.setBounds(150,40,200,100);
+        PanelUsuarios.add(titulo);
+
         //Boton gestion de usuario
         btnGestionUsuario=new JButton("Gestion Usuario");
-        btnGestionUsuario.setBounds(120,120,200,40);
         btnGestionUsuario.setBackground(colorSecundario);
+        btnGestionUsuario.setBounds(120,120,200,40);
         PanelUsuarios.add(btnGestionUsuario);
+
         //Boton mostrar Usuarios
         btnMostrarUsuario=new JButton("Mostrar Usuario");
-        btnMostrarUsuario.setBounds(120,180,200,40);
         btnMostrarUsuario.setBackground(Color.YELLOW);
+        btnMostrarUsuario.setBounds(120,180,200,40);
         PanelUsuarios.add(btnMostrarUsuario);
+
         //Boton mostrar info de un usuario
         btnBuscarUsuario=new JButton("Buscar Usuario");
-        btnBuscarUsuario.setBounds(120,240,200,40);
         btnBuscarUsuario.setBackground(Color.RED);
+        btnBuscarUsuario.setBounds(120,240,200,40);
         PanelUsuarios.add(btnBuscarUsuario);
 
         btnGestionUsuario.addActionListener(new ActionListener() {
@@ -208,14 +228,21 @@ public class Main {
                 GestionUsuarios();
             }
         });
+        btnMostrarUsuario.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                MostrarUsuario();
+            }
+        });
         PanelUsuarios.setVisible(true);
     }
     private void GestionUsuarios(){
+        //labels
+        JLabel titulo;
+        //Botones
         JButton btnReturn;
         JButton btnCreateUser;
         JButton btnUpdateUser;
         JButton btnDeleteUser;
-
 
         //Titulo Ventana
         GestionUsuarios=new JFrame();
@@ -232,10 +259,10 @@ public class Main {
         GestionUsuarios.add(btnReturn);
 
         //Titulo Principal
-        JLabel textTitle=new JLabel("Gestion de Usuarios");
-        textTitle.setBounds(150,40,400,100);
-        textTitle.setFont(new Font("Serif",Font.BOLD,24));
-        GestionUsuarios.add(textTitle);
+        titulo=new JLabel("Gestion de Usuarios");
+        titulo.setBounds(150,40,400,100);
+        titulo.setFont(new Font("Serif",Font.BOLD,24));
+        GestionUsuarios.add(titulo);
 
         //Boton Crear Usuario
         btnCreateUser=new JButton("Crear Usuario");
@@ -265,15 +292,14 @@ public class Main {
         });
         btnUpdateUser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
-//                BuscarUsuario();
+                BuscarUsuario("actualizar");
             }
         });
         btnDeleteUser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
-//                BuscarUsuario();
+              BuscarUsuario("eliminar");
             }
         });
-
         GestionUsuarios.setVisible(true);
     }
     private void CrearUsuario(){
@@ -292,6 +318,7 @@ public class Main {
         CrearUsuario.setSize(500,400);
         CrearUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         CrearUsuario.setLayout(null);
+        CrearUsuario.setResizable(false);
 
         //TITULO
         JLabel title=new JLabel("Crear Nuevo Usuario");
@@ -305,7 +332,7 @@ public class Main {
         JLabel lblTipoId=new JLabel("T.I");
         lblTipoId.setBounds(80,60,50,30);
         CrearUsuario.add(lblTipoId);
-        //INPUT
+        //Select
         String[] tipo={
                 "CC",
                 "TI",
@@ -357,15 +384,14 @@ public class Main {
         CrearUsuario.add(correo_electronico);
 
         //ROL
-        //LABEL
         JLabel lblRol=new JLabel("Rol");
         lblRol.setBounds(250,220,50,30);
         CrearUsuario.add(lblRol);
-        //INPUT
+
         String[] opcionesRol = {
-                "Aprendiz",
-                "Funcionario",
-                "Administrador"
+                "aprendiz",
+                "funcionario",
+                "administrador"
         };
         rol=new JComboBox<>(opcionesRol);
         rol.setBounds(250,250,100,30);
@@ -386,16 +412,95 @@ public class Main {
         create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 String tipo=tipoId.getSelectedItem().toString();
-                //Falta convertir el string a entero
+                String numero=numeroId.getText();
+                int numeroConvertido = 0;
+                try{
+                    numeroConvertido = Integer.parseInt(numero);
+                } catch (NumberFormatException e){
+                    javax.swing.JOptionPane.showMessageDialog(null,"Por favor ingrese un numero valido",
+                            "Error en el formato",javax.swing.JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 String nombres=nombre.getText();
                 String apellidos=apellido.getText();
                 String email=correo_electronico.getText();
                 String rolAsignado=rol.getSelectedItem().toString();
                 Admin admin=new Admin();
-                admin.crearUsuario(tipo,1032,nombres,apellidos,rolAsignado,email,"admin");
+                admin.crearUsuario(tipo,numeroConvertido,nombres,apellidos,rolAsignado,email,numero);
             }
         });
-
+        //Borrar despues
+        Admin admin = new Admin();
+        admin.mostrarAprendices();
+        admin.mostrarFuncionarios();
         CrearUsuario.setVisible(true);
+    }
+    private void BuscarUsuario(String panel){
+        //Labels
+        JLabel lblTipo;
+        JLabel lblNumero;
+
+        //Inputs
+        JComboBox<String> tipoId;
+        JTextField n_documento;
+
+        //Botones
+        JButton buscar;
+        JButton cancelar;
+
+        BuscarUsuario=new JFrame();
+        BuscarUsuario.setTitle("Buscar Usuario");
+        BuscarUsuario.setSize(200,200);
+        BuscarUsuario.setLocationRelativeTo(null);
+        BuscarUsuario.setResizable(false);
+
+        //Tipo
+        lblTipo=new JLabel("Tipo");
+        lblTipo.setBounds(null);
+        BuscarUsuario.add(lblTipo);
+
+        String[] tipo={
+                "CC",
+                "TI",
+                "Pasaporte",
+                "CE",
+                "PPT"
+        };
+        tipoId=new JComboBox<>(tipo);
+        tipoId.setBounds(250,250,100,30);
+        BuscarUsuario.add(tipoId);
+
+        //Numero
+        lblNumero=new JLabel("T.I");
+        lblNumero.setBounds(null);
+        BuscarUsuario.add(lblNumero);
+
+        n_documento=new JTextField();
+        n_documento.setBounds(null);
+        BuscarUsuario.add(n_documento);
+
+        if(panel.equals("actualizar")){
+            ActualizarInfo(getTipo,getNumero);
+        }
+        else if(panel.equals("eliminar")){
+            EliminarUsuario(getTipo,getNumero);
+        }
+        BuscarUsuario.setVisible(true);
+    }
+    private void ActualizarInfo(String tipoId,String n_documento){
+
+    }
+    private void EliminarUsuario(String tipoId,String n_documento){
+
+    }
+    private void MostrarUsuario(){
+
+        MostrarUsuario=new JFrame();
+        MostrarUsuario.setTitle("Mostrar Usuario");
+        MostrarUsuario.setSize(200,200);
+        MostrarUsuario.setLocationRelativeTo(null);
+        MostrarUsuario.setResizable(false);
+
+
     }
 }
