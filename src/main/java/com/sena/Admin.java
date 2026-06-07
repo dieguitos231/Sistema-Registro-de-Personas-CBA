@@ -9,12 +9,13 @@ import java.sql.SQLException;
 
 public class Admin {
     public List<Object[]> mostrarAprendices(){
-        List<Object[]> listaAprendizes = new ArrayList<>();
-        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres, detalle_usuario.apellidos, detalle_usuario.fecha_creacion FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.rol = 'Aprendiz'";
+        List<Object[]> listaAprendices = new ArrayList<>();
+        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres, detalle_usuario.apellidos, detalle_usuario.fecha_creacion FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.rol = 'aprendiz'";
         try{
             Connection con = ConexionDB.getConnection();
             PreparedStatement ps1 = con.prepareStatement(consulta);
             ResultSet rs = ps1.executeQuery();
+            System.out.println("Lista de Aprendices");
             while(rs.next()){
                 Object[] arreglo = new Object[5];
 
@@ -24,19 +25,18 @@ public class Admin {
                 arreglo[3] = rs.getString("apellidos");
                 arreglo[4] = rs.getString("fecha_creacion");
 
-                listaAprendizes.add(arreglo);
-                //System.out.println(arreglo[0] + " | " + " | "+ arreglo[1] + " | " + arreglo[2] + " | " + arreglo[3] + " | " + arreglo[4]);
+                listaAprendices.add(arreglo);
+                System.out.println(arreglo[0] + " | " + " | "+ arreglo[1] + " | " + arreglo[2] + " | " + arreglo[3] + " | " + arreglo[4]);
             }
         }
         catch (SQLException e){
             System.out.println("Error al obtener el detalle de Aprendiz" +  e.getMessage() );
         }
-        return listaAprendizes;
+        return listaAprendices;
     }
     public List<Object[]> mostrarFuncionarios(){
         List<Object[]> listaFuncionarios = new ArrayList<>();
-        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres, detalle_usuario.apellidos, detalle_usuario.fecha_creacion FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.rol = 'Funcionario'";
-
+        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres, detalle_usuario.apellidos, detalle_usuario.fecha_creacion FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.rol = 'funcionario'";
         try {
             Connection con = ConexionDB.getConnection();
             PreparedStatement ps2 = con.prepareStatement(consulta);
@@ -52,7 +52,7 @@ public class Admin {
                 arreglo[4] = rs.getString("fecha_creacion");
 
                 listaFuncionarios.add(arreglo);
-                //System.out.println(arreglo[0] + " | " + " | "+ arreglo[1] + " | " + arreglo[2] + " | " + arreglo[3] + " | " + arreglo[4]);
+                System.out.println(arreglo[0] + " | " + " | "+ arreglo[1] + " | " + arreglo[2] + " | " + arreglo[3] + " | " + arreglo[4]);
             }
         }
         catch (SQLException e){
