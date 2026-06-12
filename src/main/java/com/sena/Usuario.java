@@ -1,6 +1,6 @@
 package com.sena;
+import javax.swing.*;
 import java.sql.*;
-import java.util.Locale;
 
 public class Usuario {
     public String iniciarSesion(String correo_electronico, char[] password){
@@ -11,13 +11,10 @@ public class Usuario {
             query.setString(1, correo_electronico);
             query.setString(2,new String(password));
             try(ResultSet rs = query.executeQuery()){
-                if(rs.next()){
-                    System.out.println("Bienvenido usuario");
-                    return rs.getString("rol").toLowerCase();
-                }
+                if(rs.next()){JOptionPane.showMessageDialog(null,"Bienvenido");return rs.getString("rol");}
             }
         }catch (SQLException e){
-            System.out.println("Error:"+e.getMessage());
+            System.out.println("Error");
         }
         return null;
     }

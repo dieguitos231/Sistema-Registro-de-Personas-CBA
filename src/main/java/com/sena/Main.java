@@ -2,12 +2,16 @@ package com.sena;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.print.attribute.standard.JobMessageFromOperator;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import java.awt.BorderLayout;
 
 public class Main {
     //Colores
@@ -46,6 +50,7 @@ public class Main {
         JTextField textEmail;
         JPasswordField textPassword;
         JButton btnIngresar;
+
 
         //Configuracion ventana
         JFrame Login = new JFrame();
@@ -95,18 +100,17 @@ public class Main {
         btnIngresar.addActionListener(event -> {
             String txtEmail = textEmail.getText();
             char[] txtPassword = textPassword.getPassword();
+            //Validacion entrada de texto
+            if (txtEmail.isEmpty() || txtPassword.length == 0) {
+                JOptionPane.showMessageDialog(null, "Por favor ingrese el email");
+            }
+            if (txtPassword.length == 0) {
+                JOptionPane.showMessageDialog(null, "Por favor ingrese el password");
+            }
             Usuario usuario = new Usuario();
             String rol = usuario.iniciarSesion(txtEmail, txtPassword);
-            switch (rol) {
-                case "aprendiz":
-                    //Panel aprendiz
-                    break;
-                case "funcionario":
-                    //Panel funcionario
-                    break;
-                case "administrador":
-                    panelAdmin();
-                    break;
+            if (rol != null) {
+                panelAdmin();
             }
             //Vacio de valores al iniciar sesion
             textEmail.setText("");
@@ -192,7 +196,7 @@ public class Main {
         //Titulo principal
         titulo = new JLabel("Panel Usuarios");
         titulo.setFont(new Font("Serif", Font.BOLD, 24));
-        titulo.setBounds(80, 40, 200, 100);
+        titulo.setBounds(100, 40, 200, 100);
         PanelUsuarios.add(titulo);
 
         //Boton gestion de usuario
@@ -223,6 +227,15 @@ public class Main {
         PanelUsuarios.setVisible(true);
     }
 
+    private Integer convertirNumero(String numeroStr) {
+        try {
+            return Integer.parseInt(numeroStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Numero invalido");
+            return null;
+        }
+    }
+
     private void gestionUsuarios() {
         //labels
         JLabel titulo;
@@ -235,7 +248,7 @@ public class Main {
         //Configuracion ventana
         JFrame GestionUsuarios = new JFrame();
         GestionUsuarios.setTitle("Panel Gestion de usuarios");
-        GestionUsuarios.setSize(500, 400);
+        GestionUsuarios.setSize(400, 400);
         GestionUsuarios.setLocationRelativeTo(null);
         GestionUsuarios.setLayout(null);
         GestionUsuarios.setResizable(false);
@@ -251,19 +264,19 @@ public class Main {
         //Titulo Principal
         titulo = new JLabel("Gestion de Usuarios");
         titulo.setFont(new Font("Serif", Font.BOLD, 24));
-        titulo.setBounds(150, 40, 400, 100);
+        titulo.setBounds(80, 40, 400, 100);
         GestionUsuarios.add(titulo);
 
         //Boton Crear Usuario
         btnCreateUser = new JButton("Crear Usuario");
         btnCreateUser.setBackground(colorSecundario);
         btnCreateUser.setForeground(Color.black);
-        btnCreateUser.setBounds(150, 120, 200, 40);
+        btnCreateUser.setBounds(80, 120, 200, 40);
         GestionUsuarios.add(btnCreateUser);
 
         //Boton Modificar Usuario
         btnUpdateUser = new JButton("Modificar Usuario");
-        btnUpdateUser.setBounds(150, 180, 200, 40);
+        btnUpdateUser.setBounds(80, 180, 200, 40);
         btnUpdateUser.setBackground(Color.YELLOW);
         btnUpdateUser.setForeground(Color.black);
         GestionUsuarios.add(btnUpdateUser);
@@ -272,14 +285,14 @@ public class Main {
         btnDeleteUser = new JButton("Eliminar Usuario");
         btnDeleteUser.setBackground(Color.RED);
         btnDeleteUser.setForeground(Color.black);
-        btnDeleteUser.setBounds(150, 240, 200, 40);
+        btnDeleteUser.setBounds(80, 240, 200, 40);
         GestionUsuarios.add(btnDeleteUser);
 
         btnReturn.addActionListener(event -> {
             GestionUsuarios.dispose();
             panelUsuarios();
         });
-        btnCreateUser.addActionListener(event ->crearUsuario());
+        btnCreateUser.addActionListener(event -> crearUsuario());
         btnUpdateUser.addActionListener(event -> buscarUsuario("update"));
         btnDeleteUser.addActionListener(event -> buscarUsuario("delete"));
         GestionUsuarios.setVisible(true);
@@ -322,37 +335,36 @@ public class Main {
 
         //Tipo ID
         JLabel lblTipoId = new JLabel("T.I");
-        lblTipoId.setBounds(80, 60, 50, 30);
+        lblTipoId.setBounds(60, 60, 50, 30);
         CrearUsuario.add(lblTipoId);
 
         String[] tipos = {
                 "CC",
                 "TI",
-                "Pasaporte",
                 "CE",
                 "PPT"
         };
         tipoId = new JComboBox<>(tipos);
         tipoId.setBackground(Color.WHITE);
-        tipoId.setBounds(80, 100, 50, 30);
+        tipoId.setBounds(60, 100, 150, 30);
         CrearUsuario.add(tipoId);
 
         //NUMERO DE IDENTIFICACION
         lblNumeroId = new JLabel("Numero de identificación");
-        lblNumeroId.setBounds(140, 60, 150, 30);
+        lblNumeroId.setBounds(250, 60, 150, 30);
         CrearUsuario.add(lblNumeroId);
 
         numeroId = new JTextField();
-        numeroId.setBounds(140, 100, 150, 30);
+        numeroId.setBounds(250, 100, 150, 30);
         CrearUsuario.add(numeroId);
 
         //NOMBRE
         lblNombre = new JLabel("Nombre");
-        lblNombre.setBounds(80, 140, 150, 30);
+        lblNombre.setBounds(60, 140, 150, 30);
         CrearUsuario.add(lblNombre);
 
         nombre = new JTextField();
-        nombre.setBounds(80, 180, 150, 30);
+        nombre.setBounds(60, 180, 150, 30);
         CrearUsuario.add(nombre);
 
         //Apellidos
@@ -366,16 +378,16 @@ public class Main {
 
         //Email
         lblEmail = new JLabel("Correo electronico");
-        lblEmail.setBounds(80, 220, 200, 30);
+        lblEmail.setBounds(60, 220, 200, 30);
         CrearUsuario.add(lblEmail);
 
         correo_electronico = new JTextField();
-        correo_electronico.setBounds(80, 250, 150, 30);
+        correo_electronico.setBounds(60, 250, 150, 30);
         CrearUsuario.add(correo_electronico);
 
         //ROL
         lblRol = new JLabel("Rol");
-        lblRol.setBounds(250, 220, 50, 30);
+        lblRol.setBounds(230, 220, 50, 30);
         CrearUsuario.add(lblRol);
 
         String[] opcionesRol = {
@@ -385,8 +397,31 @@ public class Main {
         };
         rol = new JComboBox<>(opcionesRol);
         rol.setBackground(Color.WHITE);
-        rol.setBounds(250, 250, 100, 30);
+        rol.setBounds(230, 250, 100, 30);
         CrearUsuario.add(rol);
+
+        //CAMPO SEGUN ROL SELECCIONADO
+        JLabel lblRolSelected = new JLabel("Ficha");
+        lblRolSelected.setBounds(340, 220, 100, 30);
+        CrearUsuario.add(lblRolSelected);
+
+        JTextField txt = new JTextField();
+        txt.setBounds(340, 250, 100, 30);
+        CrearUsuario.add(txt);
+
+        rol.addActionListener(event -> {
+            String itemSeleccionado = (String) rol.getSelectedItem();
+            lblRolSelected.setVisible(true);
+            txt.setVisible(true);
+            if (itemSeleccionado.equals("aprendiz")) {
+                lblRolSelected.setText("Ficha");
+            } else if (itemSeleccionado.equals("funcionario")) {
+                lblRolSelected.setText("Cargo");
+            } else {
+                lblRolSelected.setVisible(false);
+                txt.setVisible(false);
+            }
+        });
 
         //CREAR
         create = new JButton("CREAR");
@@ -401,28 +436,34 @@ public class Main {
         CrearUsuario.add(cancel);
 
         create.addActionListener(event -> {
-            String tipo= tipoId.getSelectedItem().toString();
+            String tipo = tipoId.getSelectedItem().toString();
             String numero = numeroId.getText();
-            int numeroConvertido = 0;
-            try {
-                numeroConvertido = Integer.parseInt(numero);
-            } catch (NumberFormatException e) {
-                javax.swing.JOptionPane.showMessageDialog(null, "Por favor ingrese un numero valido",
-                        "Error en el formato", javax.swing.JOptionPane.WARNING_MESSAGE);
-                return;
-            }
+            Integer numeroIdConvertido = convertirNumero(numero);
             String nombres = nombre.getText();
             String apellidos = apellido.getText();
             String email = correo_electronico.getText();
+            String password = numeroId.getText();
             String rolAsignado = rol.getSelectedItem().toString();
+            String txtDigitado = txt.getText();
             Admin admin = new Admin();
-            admin.crearUsuario(tipo, numeroConvertido, nombres, apellidos, rolAsignado, email, numero);
+            if (rolAsignado.equals("aprendiz")) {
+                Integer nFichaConvertido = convertirNumero(txtDigitado);
+                admin.crearUsuarioAprendiz(tipo, numeroIdConvertido, nombres, apellidos, email, password, nFichaConvertido);
+            } else if (rolAsignado.equals("funcionario")) {
+                admin.crearUsuarioFuncionario(tipo, numeroIdConvertido, nombres, apellidos, email, password, txtDigitado);
+
+            }
+            //Limpiar variables
             tipoId.setSelectedIndex(0);
             numeroId.setText("");
             nombre.setText("");
             apellido.setText("");
             correo_electronico.setText("");
             rol.setSelectedIndex(0);
+            txt.setText("");
+        });
+        cancel.addActionListener(event -> {
+            CrearUsuario.dispose();
         });
         CrearUsuario.setVisible(true);
     }
@@ -455,41 +496,40 @@ public class Main {
         BuscarUsuario.add(titulo);
         //Tipo
         lblTipo = new JLabel("Tipo");
-        lblTipo.setBounds(80,80,100,40);
+        lblTipo.setBounds(80, 80, 100, 40);
         BuscarUsuario.add(lblTipo);
 
         String[] tipo = {
                 "CC",
                 "TI",
                 "Pasaporte",
-                "CE",
-                "PPT"
+                "CE"
         };
         tipoId = new JComboBox<>(tipo);
         tipoId.setBackground(Color.WHITE);
-        tipoId.setBounds(80,120, 50, 30);
+        tipoId.setBounds(80, 120, 50, 30);
         BuscarUsuario.add(tipoId);
 
         //Numero
         lblNumero = new JLabel("Numero de identificacion");
-        lblNumero.setBounds(180,80,200,40);
+        lblNumero.setBounds(180, 80, 200, 40);
         BuscarUsuario.add(lblNumero);
 
         n_documento = new JTextField();
-        n_documento.setBounds(180,120,150,30);
+        n_documento.setBounds(180, 120, 150, 30);
         BuscarUsuario.add(n_documento);
 
         //Boton buscar
-        btnBuscar=new JButton("BUSCAR");
+        btnBuscar = new JButton("BUSCAR");
         btnBuscar.setBackground(azulclaro);
         btnBuscar.setForeground(Color.WHITE);
-        btnBuscar.setBounds(230,180,100,30);
+        btnBuscar.setBounds(230, 180, 100, 30);
         BuscarUsuario.add(btnBuscar);
 
         //Boton Cancelar
-        btnCancelar=new JButton("CANCELAR");
+        btnCancelar = new JButton("CANCELAR");
         btnCancelar.setBackground(Color.white);
-        btnCancelar.setBounds(120,180,100,30);
+        btnCancelar.setBounds(120, 180, 100, 30);
         BuscarUsuario.add(btnCancelar);
         switch (panel) {
             case "actualizar":
@@ -532,10 +572,10 @@ public class Main {
         MostrarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Volver
-        btnReturn=new JButton("VOLVER");
+        btnReturn = new JButton("VOLVER");
         btnReturn.setBackground(Color.RED);
         btnReturn.setForeground(Color.WHITE);
-        btnReturn.setBounds(40,20,100,30);
+        btnReturn.setBounds(40, 20, 100, 30);
         MostrarUsuario.add(btnReturn);
 
         //Titulo
@@ -545,20 +585,58 @@ public class Main {
         MostrarUsuario.add(titulo);
 
         //Boton funcionarios
-        btnFuncionarios=new JButton("Funcionarios");
+        btnFuncionarios = new JButton("Funcionarios");
         btnFuncionarios.setBackground(colorSecundario);
-        btnFuncionarios.setBounds(100,120,150,40);
+        btnFuncionarios.setBounds(100, 120, 150, 40);
         MostrarUsuario.add(btnFuncionarios);
 
         //Boton aprendices
-        btnAprendices=new JButton("Aprendices");
+        btnAprendices = new JButton("Aprendices");
         btnAprendices.setBackground(Color.YELLOW);
-        btnAprendices.setBounds(100,180,150,40);
+        btnAprendices.setBounds(100, 180, 150, 40);
         MostrarUsuario.add(btnAprendices);
 
         Admin admin = new Admin();
-        btnFuncionarios.addActionListener(event -> admin.mostrarFuncionarios());
-        btnAprendices.addActionListener(event -> admin.mostrarAprendices());
+        btnAprendices.addActionListener(event -> {
+            mostrarAprendices();
+        });
         MostrarUsuario.setVisible(true);
+
+        admin.mostrarUsuario();
     }
+
+//    private void mostrarAprendices() {
+//        JFrame MostrarAprendices=new JFrame();
+//        MostrarAprendices.setTitle("Mostrar Aprendices");
+//        MostrarAprendices.setSize(800,500);
+//        MostrarAprendices.setLocationRelativeTo(null);
+//        MostrarAprendices.setResizable(false);
+//        MostrarAprendices.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        Admin admin = new Admin();
+//        //Tabla
+//        List<Object[]> lista = admin.mostrarAprendices();
+//        for (Object[] elemento : lista) {
+//            String tipo = (String) elemento[0];
+//            Integer n_documento = (Integer) elemento[1];
+//            String nombre= (String) elemento[2];
+//            String apellido= (String) elemento[3];
+//            String fecha=(String) elemento[4];
+//        }
+//        String[] columnas= {"ID TARJETA","T.I","N_IDENTIFICACION","NOMBRE","FECHA CREACION"};
+//
+//        String[] datos= new String[lista.size()];
+//        DefaultTableModel model=new DefaultTableModel(datos,columnas);
+//
+//        JTable table=new JTable(model);
+//
+//        JScrollPane scroll=new JScrollPane(table);
+//        MostrarAprendices.add(scroll,BorderLayout.CENTER);
+//
+//        MostrarAprendices.setVisible(true);
+//    }
+
+    private void mostrarUsuario() {
+
+    }
+
 }
