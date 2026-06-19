@@ -59,26 +59,63 @@ public class Admin {
     }
     public List<Object[]> mostrarUsuario( int numero){
         List<Object[]> listaUsuario = new ArrayList<>();
-        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento,detalle_usuario.nombres,detalle_usuario.apellidos,usuario.correo_electronico,usuario.rol FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.n_documento= ?";
+        String rol = "";
+        String query ="SELECT rol FROM usuario WHERE n_documento = ?;";
         try{
             Connection con = ConexionDB.getConnection();
-            try(PreparedStatement query= con.prepareStatement(consulta)){
-                query.setInt(1, numero);
-                ResultSet rs = query.executeQuery();
-                while(rs.next()) {
-                    Object[] arreglo = new Object[5];
-                    arreglo[0] = rs.getString("tipo_documento");
-                    arreglo[1] = rs.getInt("n_documento");
-                    arreglo[2] = rs.getString("nombres");
-                    arreglo[3] = rs.getString("apellidos");
-                    arreglo[4] = rs.getString("rol");
-                    listaUsuario.add(arreglo);
+            try(PreparedStatement ps1 = con.prepareStatement(query)){
+                ps1.setInt(1,numero);
+                ResultSet rs = ps1.executeQuery();
+                if(rs.next()){
+                    rol = rs.getString("rol");
                 }
             }
         }catch (SQLException e){
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("Error: "+ e.getMessage());
         }
-        return listaUsuario;
+        if(rol.equals("aprendiz")){
+            String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento,detalle_usuario.nombres,detalle_usuario.apellidos,usuario.correo_electronico,usuario.rol,aprendiz.ficha FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento INNER JOIN aprendiz ON usuario.n_documento = aprendiz.n_documento WHERE usuario.n_documento= ?";
+            try{
+                Connection con = ConexionDB.getConnection();
+                try(PreparedStatement query1= con.prepareStatement(consulta)){
+                    query1.setInt(1, numero);
+                    ResultSet rs = query1.executeQuery();
+                    while(rs.next()) {
+                        Object[] arreglo = new Object[6];
+                        arreglo[0] = rs.getString("tipo_documento");
+                        arreglo[1] = rs.getInt("n_documento");
+                        arreglo[2] = rs.getString("nombres");
+                        arreglo[3] = rs.getString("apellidos");
+                        arreglo[4] = rs.getString("rol");
+                        arreglo[5] = rs.getInt("ficha");
+                        listaUsuario.add(arreglo);
+                    }
+                }
+            }catch (SQLException e){
+                System.out.println("Error: " + e.getMessage());
+            }
+        }else if(rol.equals("funcionario")){
+            String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento,detalle_usuario.nombres,detalle_usuario.apellidos,usuario.correo_electronico,usuario.rol,funcionario.cargo FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento INNER JOIN funcionario ON usuario.n_documento = funcionario.n_documento WHERE usuario.n_documento= ?";
+            try{
+                Connection con = ConexionDB.getConnection();
+                try(PreparedStatement query2= con.prepareStatement(consulta)){
+                    query2.setInt(1, numero);
+                    ResultSet rs = query2.executeQuery();
+                    while(rs.next()) {
+                        Object[] arreglo = new Object[6];
+                        arreglo[0] = rs.getString("tipo_documento");
+                        arreglo[1] = rs.getInt("n_documento");
+                        arreglo[2] = rs.getString("nombres");
+                        arreglo[3] = rs.getString("apellidos");
+                        arreglo[4] = rs.getString("rol");
+                        arreglo[5] = rs.getString("cargo");
+                        listaUsuario.add(arreglo);
+                    }
+                }
+            }catch (SQLException e){
+                System.out.println("Error: " + e.getMessage());
+            }
+        }return listaUsuario;
     }
 
     public void crearUsuarioAprendiz(String tipo_documento,int n_documento,String nombres,String apellidos, String correo_electronico, String password, int ficha){
@@ -141,9 +178,10 @@ public class Admin {
             ex.printStackTrace();
         }
     }
-    public void modificarUsuarios(){
-
-    }
+/*    public void modificarUsuarios(int n_documento){
+        String consulta = "DELETE FROM usuario WHERE n_documento = ?;";
+        try(Connec)
+    }*/
     public void eliminarUsuarios(){
 
     }

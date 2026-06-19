@@ -9,7 +9,7 @@ public class Usuario {
 
     public List<Object[]> iniciarSesion(String correo_electronico, char[] password) {
         List<Object[]> lista= new ArrayList<>();
-        String consulta = "SELECT rol, primer_ingreso FROM usuario WHERE correo_electronico=? AND password = crypt(?, password);";
+        String consulta = "SELECT n_documento,rol, primer_ingreso FROM usuario WHERE correo_electronico=? AND password = crypt(?, password);";
 
         try {
             Connection con = ConexionDB.getConnection();
@@ -19,9 +19,10 @@ public class Usuario {
 
             try (ResultSet rs = query.executeQuery()) {
                 if (rs.next()) {
-                    Object[] array= new Object[2];
-                    array[0] = rs.getString("rol");
-                    array[1] = rs.getBoolean("primer_ingreso");
+                    Object[] array= new Object[3];
+                    array[0] = rs.getInt("n_documento");
+                    array[1] = rs.getString("rol");
+                    array[2] = rs.getBoolean("primer_ingreso");
                     lista.add(array);
                 }
             }
@@ -30,9 +31,27 @@ public class Usuario {
         }
         return lista;
     }
-    public actualizarContraseña(){
-
+    public void  actualizarContrasena(char[] password, int n_documento){
+        String consulta = "UPDATE usuario SET password=crypt(?,password) WHERE n_documento =?";
+        try(Connection con = ConexionDB.getConnection();){
+            try(PreparedStatement ps1 = con.prepareStatement(consulta)){
+                ps1.setString(1, new String(password));
+                ps1.setInt(2, n_documento);
+                ps1.executeUpdate();
+            }
+        }catch(SQLException e){
+            System.out.println("Error al actualizar los datos: " + e.getMessage());
+        }
     }
-
+    public void actulizarIngreso(int n_documento){
+        String consulta = "UPDATE usuario set primer_ingreso=false WHERE n_documento=?";
+        try(Connection con = ConexionDB.getConnection();){
+            try(PreparedStatement ps1 = con.prepareStatement(consulta)){
+                ps1.setInt(1,n_documento);
+                ps1.executeUpdate();
+            }
+        }catch(SQLException e){
+            System.out.println("Error al actualizar los datos: " + e.getMessage());
+        }
+    }
 }
-

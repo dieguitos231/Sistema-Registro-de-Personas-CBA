@@ -110,12 +110,14 @@ public class Main {
             Usuario usuario = new Usuario();
             List<Object[]> dato = usuario.iniciarSesion(txtEmail, txtPassword);
             for(Object[] data : dato) {
-                String rol= (String) data[0];
-                Boolean primerIngreso= (Boolean) data[1];
+                Integer n_documento = (Integer) data[0];
+                String rol= (String) data[1];
+                Boolean primerIngreso= (Boolean) data[2];
                 if(rol.equals("administrador")&& primerIngreso.equals(false)) {
                     panelAdmin();
                 }else if(rol.equals("administrador")&& primerIngreso.equals(true)) {
-                    primerIngreso();
+                    primerIngreso(n_documento);
+                    usuario.actulizarIngreso(n_documento);
                 }
             }
             //Vacio de valores al iniciar sesion
@@ -232,7 +234,7 @@ public class Main {
         btnBuscarUsuario.addActionListener(event -> mostrarUsuario());
         PanelUsuarios.setVisible(true);
     }
-    public void primerIngreso(){
+    public void primerIngreso(int n_documento){
         //Label
         JLabel titulo;
         //Input
@@ -269,12 +271,11 @@ public class Main {
         PrimerIngreso.add(enviar);
 
         enviar.addActionListener(event -> {
-            //Necesito actualizar la contrasena y cambiar el estado del usuario
+            char[] passwordDigitada=password.getPassword();
             Usuario usuario=new Usuario();
-            usuario.actualizarContrasena();
-
+            usuario.actualizarContrasena(passwordDigitada,n_documento);
+            panelAdmin();
         });
-
         PrimerIngreso.setVisible(true);
     }
 
@@ -734,7 +735,7 @@ public class Main {
     private void mostrarUsuario(){
         //Labels
         JLabel titulo;
-        JLabel lbltituloId;
+        JLabel lblTituloId;
         JLabel lblNumero;
         JLabel lblTipoId;
         JLabel lblNombre;
@@ -744,7 +745,7 @@ public class Main {
         JLabel infTipoId;
         JLabel infNumeroId;
         JLabel infNombre;
-        JLabel info;
+        JLabel info; //Ficha o cargo
         JLabel infRol;
         //Input
         JTextField numeroDigitado;
@@ -777,9 +778,9 @@ public class Main {
         MostrarUsuario.add(titulo);
 
         //Input
-        lbltituloId=new JLabel("Numero de identificacion");
-        lbltituloId.setBounds(80,90,150,30);
-        MostrarUsuario.add(lbltituloId);
+        lblTituloId=new JLabel("Numero de identificacion");
+        lblTituloId.setBounds(80,90,150,30);
+        MostrarUsuario.add(lblTituloId);
 
         numeroDigitado=new JTextField();
         numeroDigitado.setBounds(80, 120, 150, 30);
@@ -833,7 +834,7 @@ public class Main {
         MostrarUsuario.add(txt);
 
         info=new JLabel();
-        info.setBounds(340,200,150,30);
+        info.setBounds(300,200,150,30);
         MostrarUsuario.add(info);
         btnReturn.addActionListener(event -> {
            MostrarUsuario.dispose();
@@ -849,14 +850,23 @@ public class Main {
                 String nombres=(String) arreglo[2];
                 String apellidos=(String) arreglo[3];
                 String rol=(String)arreglo[4];
+                if(arreglo[4].equals("aprendiz")){
+                    Integer ficha=(Integer)arreglo[5];
+                    txt.setText("Ficha: ");
+                    info.setText(ficha.toString());
+                }else if(arreglo[4].equals("funcionario")){
+                    String cargo =(String) arreglo[5];
+                    txt.setText("Cargo: ");
+                    info.setText(cargo);
+                }
                 infTipoId.setText(tipo);
                 infNumeroId.setText(intNumero.toString());
                 infNombre.setText(nombres+" "+apellidos);
                 infRol.setText(rol);
+
             }
         });
 
         MostrarUsuario.setVisible(true);
     }
-
 }
