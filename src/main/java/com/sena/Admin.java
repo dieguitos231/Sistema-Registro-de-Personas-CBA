@@ -1,5 +1,6 @@
 package com.sena;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Connection;
@@ -15,7 +16,6 @@ public class Admin {
             Connection con = ConexionDB.getConnection();
             PreparedStatement ps1 = con.prepareStatement(consulta);
             ResultSet rs = ps1.executeQuery();
-            System.out.println("Lista de Aprendices");
             while(rs.next()){
                 Object[] arreglo = new Object[5];
 
@@ -41,10 +41,8 @@ public class Admin {
             Connection con = ConexionDB.getConnection();
             PreparedStatement ps2 = con.prepareStatement(consulta);
             ResultSet rs = ps2.executeQuery();
-            System.out.println("Lista de Funcionarios");
             while (rs.next()) {
                 Object[] arreglo = new Object[5];
-
                 arreglo[0] = rs.getString("tipo_documento");
                 arreglo[1] = rs.getInt("n_documento");
                 arreglo[2] = rs.getString("nombres");
@@ -52,37 +50,33 @@ public class Admin {
                 arreglo[4] = rs.getString("fecha_creacion");
 
                 listaFuncionarios.add(arreglo);
-                System.out.println(arreglo[0] + " | " + " | "+ arreglo[1] + " | " + arreglo[2] + " | " + arreglo[3] + " | " + arreglo[4]);
             }
         }
         catch (SQLException e){
-            System.out.println("Error al obtener el detalle de Funcionario" +  e.getMessage() );
+            System.out.println("Error: " +  e.getMessage() );
         }
         return listaFuncionarios;
     }
-    public List<Object[]> mostrarUsuario(){
+    public List<Object[]> mostrarUsuario( int numero){
         List<Object[]> listaUsuario = new ArrayList<>();
-        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento,detalle_usuario.nombres,detalle_usuario.apellidos,usuario.correo_electronico,usuario.rol FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.n_documento = '1031807049'";
+        String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento,detalle_usuario.nombres,detalle_usuario.apellidos,usuario.correo_electronico,usuario.rol FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.n_documento= ?";
         try{
             Connection con = ConexionDB.getConnection();
-            PreparedStatement ps3 = con.prepareStatement(consulta);
-            ResultSet rs = ps3.executeQuery();
-            System.out.println("Datos Usuario");
-            while(rs.next()){
-                Object[] arreglo = new Object[5];
-
-                arreglo[0] = rs.getString("tipo_documento");
-                arreglo[1] = rs.getInt("n_documento");
-                arreglo[2] = rs.getString("nombres");
-                arreglo[3] = rs.getString("apellidos");
-                arreglo[4] = rs.getString("rol");
-
-                listaUsuario.add(arreglo);
-                System.out.println(arreglo[0] + " | " + " | "+ arreglo[1] + " | " + arreglo[2] + " | " + arreglo[3] + " | " + arreglo[4]);
-
+            try(PreparedStatement query= con.prepareStatement(consulta)){
+                query.setInt(1, numero);
+                ResultSet rs = query.executeQuery();
+                while(rs.next()) {
+                    Object[] arreglo = new Object[5];
+                    arreglo[0] = rs.getString("tipo_documento");
+                    arreglo[1] = rs.getInt("n_documento");
+                    arreglo[2] = rs.getString("nombres");
+                    arreglo[3] = rs.getString("apellidos");
+                    arreglo[4] = rs.getString("rol");
+                    listaUsuario.add(arreglo);
+                }
             }
         }catch (SQLException e){
-            System.out.println("Error al obtener la informacion del usuario" + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
         return listaUsuario;
     }

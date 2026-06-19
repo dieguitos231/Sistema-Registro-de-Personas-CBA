@@ -108,9 +108,15 @@ public class Main {
                 JOptionPane.showMessageDialog(null, "Por favor ingrese el password");
             }
             Usuario usuario = new Usuario();
-            String rol = usuario.iniciarSesion(txtEmail, txtPassword);
-            if (rol != null) {
-                panelAdmin();
+            List<Object[]> dato = usuario.iniciarSesion(txtEmail, txtPassword);
+            for(Object[] data : dato) {
+                String rol= (String) data[0];
+                Boolean primerIngreso= (Boolean) data[1];
+                if(rol.equals("administrador")&& primerIngreso.equals(false)) {
+                    panelAdmin();
+                }else if(rol.equals("administrador")&& primerIngreso.equals(true)) {
+                    primerIngreso();
+                }
             }
             //Vacio de valores al iniciar sesion
             textEmail.setText("");
@@ -223,8 +229,53 @@ public class Main {
             PanelUsuarios.dispose();
         });
         btnMostrarUsuario.addActionListener(event -> mostrarUsuarios());
-        btnBuscarUsuario.addActionListener(event -> buscarUsuario("mostrarInfo"));
+        btnBuscarUsuario.addActionListener(event -> mostrarUsuario());
         PanelUsuarios.setVisible(true);
+    }
+    public void primerIngreso(){
+        //Label
+        JLabel titulo;
+        //Input
+        JPasswordField password;
+        //Boton
+        JButton enviar;
+
+        JFrame PrimerIngreso=new JFrame();
+        PrimerIngreso.setTitle("Inicio de sesion");
+        PrimerIngreso.setSize(400,200);
+        PrimerIngreso.getContentPane().setBackground(colorSena);
+        PrimerIngreso.setLocationRelativeTo(null);
+        PrimerIngreso.setLayout(null);
+        PrimerIngreso.setResizable(false);
+        PrimerIngreso.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Titulo
+        titulo=new JLabel("Ingrese la nueva contraseña");
+        titulo.setFont(new Font("Serif",Font.BOLD,24));
+        titulo.setForeground(Color.WHITE);
+        titulo.setBounds(40,20,400,50);
+        PrimerIngreso.add(titulo);
+
+        //Password
+        password=new JPasswordField();
+        password.setFont(new Font("Serif",Font.BOLD,16));
+        password.setBounds(40,100,150,30);
+        PrimerIngreso.add(password);
+
+        //Enviar
+        enviar=new JButton("Enviar");
+        enviar.setBackground(colorSecundario);
+        enviar.setBounds(200,100,100,30);
+        PrimerIngreso.add(enviar);
+
+        enviar.addActionListener(event -> {
+            //Necesito actualizar la contrasena y cambiar el estado del usuario
+            Usuario usuario=new Usuario();
+            usuario.actualizarContrasena();
+
+        });
+
+        PrimerIngreso.setVisible(true);
     }
 
     private Integer convertirNumero(String numeroStr) {
@@ -439,8 +490,8 @@ public class Main {
             String tipo = tipoId.getSelectedItem().toString();
             String numero = numeroId.getText();
             Integer numeroIdConvertido = convertirNumero(numero);
-            String nombres = nombre.getText();
-            String apellidos = apellido.getText();
+            String nombres = nombre.getText().toLowerCase();
+            String apellidos = apellido.getText().toLowerCase();
             String email = correo_electronico.getText();
             String password = numeroId.getText();
             String rolAsignado = rol.getSelectedItem().toString();
@@ -553,7 +604,6 @@ public class Main {
         JFrame EliminarUsuario = new JFrame();
         EliminarUsuario.setTitle("Eliminar Usuario");
     }
-
     private void mostrarUsuarios() {
         //labels
         JLabel titulo;
@@ -595,48 +645,218 @@ public class Main {
         btnAprendices.setBackground(Color.YELLOW);
         btnAprendices.setBounds(100, 180, 150, 40);
         MostrarUsuario.add(btnAprendices);
-
-        Admin admin = new Admin();
+        btnReturn.addActionListener(event -> {
+           MostrarUsuario.setVisible(false);
+           MostrarUsuario.dispose();
+        });
+        btnFuncionarios.addActionListener(event -> {
+            mostrarFuncionarios();
+        });
         btnAprendices.addActionListener(event -> {
             mostrarAprendices();
         });
         MostrarUsuario.setVisible(true);
-
-        admin.mostrarUsuario();
     }
 
-//    private void mostrarAprendices() {
-//        JFrame MostrarAprendices=new JFrame();
-//        MostrarAprendices.setTitle("Mostrar Aprendices");
-//        MostrarAprendices.setSize(800,500);
-//        MostrarAprendices.setLocationRelativeTo(null);
-//        MostrarAprendices.setResizable(false);
-//        MostrarAprendices.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        Admin admin = new Admin();
-//        //Tabla
-//        List<Object[]> lista = admin.mostrarAprendices();
-//        for (Object[] elemento : lista) {
-//            String tipo = (String) elemento[0];
-//            Integer n_documento = (Integer) elemento[1];
-//            String nombre= (String) elemento[2];
-//            String apellido= (String) elemento[3];
-//            String fecha=(String) elemento[4];
-//        }
-//        String[] columnas= {"ID TARJETA","T.I","N_IDENTIFICACION","NOMBRE","FECHA CREACION"};
-//
-//        String[] datos= new String[lista.size()];
-//        DefaultTableModel model=new DefaultTableModel(datos,columnas);
-//
-//        JTable table=new JTable(model);
-//
-//        JScrollPane scroll=new JScrollPane(table);
-//        MostrarAprendices.add(scroll,BorderLayout.CENTER);
-//
-//        MostrarAprendices.setVisible(true);
-//    }
+    private void mostrarAprendices() {
+        JFrame MostrarAprendices=new JFrame();
+        MostrarAprendices.setTitle("Mostrar Aprendices");
+        MostrarAprendices.setSize(800,500);
+        MostrarAprendices.setLocationRelativeTo(null);
+        MostrarAprendices.setResizable(false);
+        MostrarAprendices.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Admin admin = new Admin();
+        //Tabla
+        String[] columnas= {"T.I","N_IDENTIFICACION","NOMBRE","FECHA CREACION"};
+        DefaultTableModel model=new DefaultTableModel();
+        model.addColumn(columnas[0]);
+        model.addColumn(columnas[1]);
+        model.addColumn(columnas[2]);
+        model.addColumn(columnas[3]);
+        JTable table=new JTable(model);
+        JScrollPane scroll=new JScrollPane(table);
+        MostrarAprendices.add(scroll,BorderLayout.CENTER);
+        //Agregar filas
+        List<Object[]> lista = admin.mostrarAprendices();
+        if (lista.size() != 0){
+            for (Object[] elemento : lista) {
+                String tipo = (String) elemento[0];
+                Integer n_documento = (Integer) elemento[1];
+                String nombre= (String) elemento[2];
+                String apellido= (String) elemento[3];
+                String fecha=(String) elemento[4];
+                model.addRow(new Object[]{tipo,n_documento,(nombre+apellido),fecha});
+                MostrarAprendices.setVisible(true);
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "No existen datos encontrados");
+            MostrarAprendices.setVisible(false);
+        }
 
-    private void mostrarUsuario() {
 
+    }
+    private void mostrarFuncionarios() {
+        JFrame MostrarFuncionarios=new JFrame();
+        MostrarFuncionarios.setTitle("Mostrar Funcionarios");
+        MostrarFuncionarios.setLocationRelativeTo(null);
+        MostrarFuncionarios.setSize(800,500);
+        MostrarFuncionarios.setResizable(false);
+        MostrarFuncionarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Admin admin = new Admin();
+        //Tabla
+        String[] columnas= {"T.I","N_IDENTIFICACION","NOMBRE","FECHA CREACION"};
+        DefaultTableModel model=new DefaultTableModel();
+        model.addColumn(columnas[0]);
+        model.addColumn(columnas[1]);
+        model.addColumn(columnas[2]);
+        model.addColumn(columnas[3]);
+        JTable table=new JTable(model);
+        JScrollPane scroll=new JScrollPane(table);
+        MostrarFuncionarios.add(scroll,BorderLayout.CENTER);
+        //Agregar filas
+        List<Object[]> lista = admin.mostrarFuncionarios();
+        if (lista.size() != 0){
+            for (Object[] elemento : lista) {
+                String tipo = (String) elemento[0];
+                Integer n_documento = (Integer) elemento[1];
+                String nombre= (String) elemento[2];
+                String apellido= (String) elemento[3];
+                String fecha=(String) elemento[4];
+                model.addRow(new Object[]{tipo,n_documento,(nombre+apellido),fecha});
+                MostrarFuncionarios.setVisible(true);
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "No existen datos encontrados");
+            MostrarFuncionarios.setVisible(false);
+        }
+    }
+
+    private void mostrarUsuario(){
+        //Labels
+        JLabel titulo;
+        JLabel lbltituloId;
+        JLabel lblNumero;
+        JLabel lblTipoId;
+        JLabel lblNombre;
+        JLabel lblRol;
+        JLabel txt;
+        //Inputs
+        JLabel infTipoId;
+        JLabel infNumeroId;
+        JLabel infNombre;
+        JLabel info;
+        JLabel infRol;
+        //Input
+        JTextField numeroDigitado;
+
+        //Butons
+        JButton btnBuscar;
+        JButton btnReturn;
+
+        JFrame MostrarUsuario=new JFrame();
+        MostrarUsuario.setTitle("Buscar información usuario");
+        MostrarUsuario.setSize(500,400);
+        MostrarUsuario.setLocationRelativeTo(null);
+        MostrarUsuario.setLayout(null);
+        MostrarUsuario.setResizable(false);
+        MostrarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Boton volver
+        btnReturn=new JButton("Volver");
+        btnReturn.setBackground(Color.RED);
+        btnReturn.setForeground(Color.WHITE);
+        btnReturn.setBounds(40,20,80,30);
+        MostrarUsuario.add(btnReturn);
+
+
+        //Titulo
+        titulo=new JLabel("Consultar Usuario");
+        titulo.setForeground(colorSecundario);
+        titulo.setFont(new Font("Serif",Font.BOLD,24));
+        titulo.setBounds(80,60,300,30);
+        MostrarUsuario.add(titulo);
+
+        //Input
+        lbltituloId=new JLabel("Numero de identificacion");
+        lbltituloId.setBounds(80,90,150,30);
+        MostrarUsuario.add(lbltituloId);
+
+        numeroDigitado=new JTextField();
+        numeroDigitado.setBounds(80, 120, 150, 30);
+        MostrarUsuario.add(numeroDigitado);
+
+        btnBuscar=new JButton("BUSCAR");
+        btnBuscar.setBackground(azulclaro);
+        btnBuscar.setForeground(Color.WHITE);
+        btnBuscar.setBounds(240,120,100,30);
+        MostrarUsuario.add(btnBuscar);
+
+        //Tipo de id
+        lblTipoId=new JLabel("T.I :");
+        lblTipoId.setBounds(80,160,50,30);
+        MostrarUsuario.add(lblTipoId);
+
+        infTipoId=new JLabel();
+        infTipoId.setBounds(120,160,100,30);
+        MostrarUsuario.add(infTipoId);
+
+        //Numero de identificacion
+        lblNumero=new JLabel("Numero de identificacion:");
+        lblNumero.setBounds(200,160,150,30);
+        MostrarUsuario.add(lblNumero);
+
+        infNumeroId=new JLabel();
+        infNumeroId.setBounds(360,160,100,30);
+        MostrarUsuario.add(infNumeroId);
+
+        //Nombre
+        lblNombre=new JLabel("Nombre:");
+        lblNombre.setBounds(80,180,100,30);
+        MostrarUsuario.add(lblNombre);
+
+        infNombre=new JLabel();
+        infNombre.setBounds(140,180,300,30);
+        MostrarUsuario.add(infNombre);
+
+        //Rol
+        lblRol=new JLabel("Rol:");
+        lblRol.setBounds(80,200,100,30);
+        MostrarUsuario.add(lblRol);
+
+        infRol=new JLabel();
+        infRol.setBounds(120,200,100,30);
+        MostrarUsuario.add(infRol);
+
+        //Cargo o ficha
+        txt=new JLabel();
+        txt.setBounds(240,200,150,30);
+        MostrarUsuario.add(txt);
+
+        info=new JLabel();
+        info.setBounds(340,200,150,30);
+        MostrarUsuario.add(info);
+        btnReturn.addActionListener(event -> {
+           MostrarUsuario.dispose();
+        });
+        btnBuscar.addActionListener(event ->{
+            Integer numero=convertirNumero(numeroDigitado.getText());
+            numeroDigitado.setText("");
+            Admin admin=new Admin();
+            List<Object[]> lista=admin.mostrarUsuario(numero);
+            for(Object[] arreglo:lista){
+                String tipo=(String)arreglo[0];
+                Integer intNumero=(Integer) arreglo[1];
+                String nombres=(String) arreglo[2];
+                String apellidos=(String) arreglo[3];
+                String rol=(String)arreglo[4];
+                infTipoId.setText(tipo);
+                infNumeroId.setText(intNumero.toString());
+                infNombre.setText(nombres+" "+apellidos);
+                infRol.setText(rol);
+            }
+        });
+
+        MostrarUsuario.setVisible(true);
     }
 
 }
