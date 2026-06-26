@@ -308,7 +308,7 @@ public class Main {
         GestionUsuarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Boton Volver
-        btnReturn = new JButton("VOLVER");
+        btnReturn = new JButton("Volver");
         btnReturn.setBounds(40, 20, 100, 30);
         btnReturn.setBackground(Color.RED);
         btnReturn.setForeground(Color.WHITE);
@@ -350,7 +350,6 @@ public class Main {
         btnDeleteUser.addActionListener(event -> buscarUsuario("eliminar"));
         GestionUsuarios.setVisible(true);
     }
-
     private void crearUsuario() {
         //Labels
         JLabel titulo;
@@ -520,7 +519,6 @@ public class Main {
         });
         CrearUsuario.setVisible(true);
     }
-
     private void buscarUsuario(String panel) {
         //Labels
         JLabel titulo;
@@ -576,18 +574,129 @@ public class Main {
         btnBuscar.addActionListener(event -> {
             Integer numero=convertirNumero(n_documento.getText());
             switch(panel){
+                case "actualizar":
+                    actualizarInfoUsuario(numero);
+                    break;
                 case "eliminar":
                     eliminarUsuario(numero);
                     break;
             }
+            n_documento.setText("");
         });
         BuscarUsuario.setVisible(true);
     }
+    private void actualizarInfoUsuario(int n_documento){
+        //Labels
+        JLabel titulo;
+        JLabel lblTituloId;
+        JLabel lblNumeroId;
+        JLabel lblNombre;
+        JLabel lblApellido;
+        JLabel lblRol;
+        JLabel lblInfo;
 
-    private void actualizarInfo(String tipoId, String n_documento) {
-        JFrame ActualizarInfo = new JFrame();
+        //Inputs
+        JTextField infTituloId;
+        JTextField infNumeroId;
+        JTextField infNombre;
+        JTextField infApellido;
+        JTextField infRol;
+        JTextField info;
+
+        //Buttons
+        JButton btnCancel;
+        JButton btnUpdate;
+
+        JFrame ActualizarUsuario=new JFrame();
+        ActualizarUsuario.setTitle("Panel modificar informacion usuario");
+        ActualizarUsuario.setSize(500,350);
+        ActualizarUsuario.setLocationRelativeTo(null);
+        ActualizarUsuario.setLayout(null);
+        ActualizarUsuario.setResizable(false);
+        ActualizarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Titulo
+        titulo=new JLabel("Modificar Usuario");
+        titulo.setForeground(Color.ORANGE);
+        titulo.setFont(new Font("Serif",Font.BOLD,24));
+        titulo.setBounds(40,20,300,50);
+        ActualizarUsuario.add(titulo);
+
+        //Tipo de identificacion
+        lblTituloId=new JLabel("T.I:");
+        lblTituloId.setBounds(40,80,50,30);
+        ActualizarUsuario.add(lblTituloId);
+
+        infTituloId=new JTextField();
+        infTituloId.setBounds(100,80,50,30);
+        ActualizarUsuario.add(infTituloId);
+
+        //Numero de identificacion
+        lblNumeroId=new JLabel("Numero de identificación:");
+        lblNumeroId.setBounds(160,80,150,30);
+        ActualizarUsuario.add(lblNumeroId);
+
+        infNumeroId=new JTextField();
+        infNumeroId.setBounds(320,80,100,30);
+        ActualizarUsuario.add(infNumeroId);
+
+        //Nombre
+        lblNombre=new JLabel("Nombres:");
+        lblNombre.setBounds(40,120,100,30);
+        ActualizarUsuario.add(lblNombre);
+
+        infNombre=new JTextField();
+        infNombre.setBounds(100,120,100,30);
+        ActualizarUsuario.add(infNombre);
+
+        //Apellido
+        lblApellido=new JLabel("Apellidos:");
+        lblApellido.setBounds(260,120,100,30);
+        ActualizarUsuario.add(lblApellido);
+
+        infApellido=new JTextField();
+        infApellido.setBounds(320,120,100,30);
+        ActualizarUsuario.add(infApellido);
+
+        //Rol
+        lblRol=new JLabel("Rol:");
+        lblRol.setBounds(40,160,100,30);
+        ActualizarUsuario.add(lblRol);
+
+        infRol=new JTextField();
+        infRol.setBounds(100,160,100,30);
+        ActualizarUsuario.add(infRol);
+
+        //Info
+        lblInfo=new JLabel("Ficha:");
+        lblInfo.setBounds(260,160,80,30);
+        ActualizarUsuario.add(lblInfo);
+
+        info=new JTextField();
+        info.setBounds(320,160,100,30);
+        ActualizarUsuario.add(info);
+
+        //Boton cancelar
+        btnCancel=new JButton("Cancelar");
+        btnCancel.setBackground(Color.white);
+        btnCancel.setBounds(200,240,100,30);
+        ActualizarUsuario.add(btnCancel);
+
+        //Boton eliminar
+        btnUpdate=new JButton("Modificar");
+        btnUpdate.setBackground(Color.ORANGE);
+        btnUpdate.setBounds(320,240,100,30);
+        ActualizarUsuario.add(btnUpdate);
+
+        btnCancel.addActionListener(event -> {
+            ActualizarUsuario.dispose();
+        });
+        btnUpdate.addActionListener(event -> {
+           System.out.println("Modificando usuario");
+        });
+
+        ActualizarUsuario.setVisible(true);
     }
-
     private void eliminarUsuario(int n_documento) {
         //Inputs
         JLabel titulo;
@@ -629,6 +738,7 @@ public class Main {
         EliminarUsuario.add(lblTituloId);
 
         infTituloId = new JLabel("T.I");
+        infTituloId.setForeground(Color.GRAY);
         infTituloId.setBounds(100, 80, 50, 30);
         EliminarUsuario.add(infTituloId);
 
@@ -638,6 +748,7 @@ public class Main {
         EliminarUsuario.add(lblNumeroId);
 
         infNumeroId = new JLabel("1031807049");
+        infNumeroId.setForeground(Color.GRAY);
         infNumeroId.setBounds(300, 80, 150, 30);
         EliminarUsuario.add(infNumeroId);
 
@@ -646,7 +757,8 @@ public class Main {
         lblNombre.setBounds(80, 100, 100, 30);
         EliminarUsuario.add(lblNombre);
 
-        infNombre = new JLabel();
+        infNombre = new JLabel("Luis");
+        infNombre.setForeground(Color.GRAY);
         infNombre.setBounds(140, 100, 200, 30);
         EliminarUsuario.add(infNombre);
 
@@ -656,6 +768,7 @@ public class Main {
         EliminarUsuario.add(lblRol);
 
         infRol = new JLabel();
+        infRol.setForeground(Color.GRAY);
         infRol.setBounds(140, 120, 150, 30);
         EliminarUsuario.add(infRol);
 
@@ -665,6 +778,7 @@ public class Main {
         EliminarUsuario.add(lblInfo);
 
         info = new JLabel("2877742");
+        info.setForeground(Color.GRAY);
         info.setBounds(260, 120, 200, 30);
         EliminarUsuario.add(info);
 
@@ -685,15 +799,11 @@ public class Main {
         });
 
         btnDelete.addActionListener(event -> {
+//            JOptionPane.showMessageDialog(null,"Usuario "+infNombre.getText()+" eliminado.");
             System.out.println("Eliminando usuario");
         });
-
-
-
         EliminarUsuario.setVisible(true);
     }
-
-
     private void mostrarUsuarios() {
         //labels
         JLabel titulo;
@@ -712,7 +822,7 @@ public class Main {
         MostrarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Volver
-        btnReturn = new JButton("VOLVER");
+        btnReturn = new JButton("Volver");
         btnReturn.setBackground(Color.RED);
         btnReturn.setForeground(Color.WHITE);
         btnReturn.setBounds(40, 20, 100, 30);
@@ -747,7 +857,6 @@ public class Main {
         });
         MostrarUsuario.setVisible(true);
     }
-
     private void mostrarAprendices() {
         JFrame MostrarAprendices = new JFrame();
         MostrarAprendices.setTitle("Mostrar Aprendices");
@@ -785,7 +894,6 @@ public class Main {
 
 
     }
-
     private void mostrarFuncionarios() {
         JFrame MostrarFuncionarios = new JFrame();
         MostrarFuncionarios.setTitle("Mostrar Funcionarios");
@@ -821,7 +929,6 @@ public class Main {
             MostrarFuncionarios.setVisible(false);
         }
     }
-
     private void mostrarUsuario() {
         //Labels
         JLabel titulo;
