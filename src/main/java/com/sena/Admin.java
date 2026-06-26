@@ -178,10 +178,73 @@ public class Admin {
             ex.printStackTrace();
         }
     }
-/*   public void modificarUsuarios(int n_documento){
-        String consulta = "DELETE FROM usuario WHERE n_documento = ?;";
-        try(Connec)
-    }*/
+    public void modificarUsuarioAprendiz(int n_documento, String nombres, String apellidos, String correo_electronico, String rol, int ficha) {
+        String query1 = "UPDATE usuario SET correo_electronico = ?, rol = ? WHERE n_documento = ?";
+        String query2 = "UPDATE detalle_usuario SET nombres = ?, apellidos = ? WHERE n_documento = ?";
+        String query3 = "UPDATE aprendiz SET ficha = ? WHERE n_documento = ?";
+
+        try (Connection con = ConexionDB.getConnection()) {
+
+            try (java.sql.PreparedStatement ps1 = con.prepareStatement(query1);
+                 java.sql.PreparedStatement ps2 = con.prepareStatement(query2);
+                 java.sql.PreparedStatement ps3 = con.prepareStatement(query3)) {
+
+                ps1.setString(1, correo_electronico);
+                ps1.setString(2, rol);
+                ps1.setInt(3, n_documento);
+                ps1.executeUpdate();
+
+                ps2.setString(1, nombres);
+                ps2.setString(2, apellidos);
+                ps2.setInt(3, n_documento);
+                ps2.executeUpdate();
+
+                ps3.setInt(1, ficha);
+                ps3.setInt(2, n_documento);
+                ps3.executeUpdate();
+
+                con.commit();
+                System.out.println("Datos del aprendiz editados con exito");
+
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error al modificar la informacion");
+            ex.printStackTrace();
+        }
+    }
+    public void modificarUsuarioFuncionario(int n_documento, String nombres, String apellidos, String correo_electronico, String rol, String cargo) {
+        String query1 = "UPDATE usuario SET correo_electronico = ?, rol = ? WHERE n_documento = ?";
+        String query2 = "UPDATE detalle_usuario SET nombres = ?, apellidos = ? WHERE n_documento = ?";
+        String query3 = "UPDATE funcionario SET cargo = ? WHERE n_documento = ?";
+
+        try (Connection con = ConexionDB.getConnection()) {
+
+            try (java.sql.PreparedStatement ps1 = con.prepareStatement(query1);
+                 java.sql.PreparedStatement ps2 = con.prepareStatement(query2);
+                 java.sql.PreparedStatement ps3 = con.prepareStatement(query3)) {
+
+                ps1.setString(1, correo_electronico);
+                ps1.setString(2, rol);
+                ps1.setInt(3, n_documento);
+                ps1.executeUpdate();
+
+                ps2.setString(1, nombres);
+                ps2.setString(2, apellidos);
+                ps2.setInt(3, n_documento);
+                ps2.executeUpdate();
+
+                ps3.setString(1, cargo);
+                ps3.setInt(2, n_documento);
+                ps3.executeUpdate();
+
+                System.out.println("Datos del funcionario editados con exito");
+
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error al modificar la informacion");
+            ex.printStackTrace();
+        }
+    }
     public void eliminarUsuarios(){
 
     }
