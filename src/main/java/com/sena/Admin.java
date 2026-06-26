@@ -178,7 +178,7 @@ public class Admin {
             ex.printStackTrace();
         }
     }
-/*    public void modificarUsuarios(int n_documento){
+/*   public void modificarUsuarios(int n_documento){
         String consulta = "DELETE FROM usuario WHERE n_documento = ?;";
         try(Connec)
     }*/
