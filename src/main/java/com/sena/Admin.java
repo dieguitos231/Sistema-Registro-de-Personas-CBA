@@ -9,6 +9,64 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Admin {
+    public void crearUsuarioAprendiz(String tipo_documento,int n_documento,String nombres,String apellidos, String correo_electronico, String password, int ficha){
+        String query1 = "INSERT INTO usuario(n_documento,correo_electronico,password,rol) VALUES(?,?,crypt(?,gen_salt('bf')),'aprendiz')";
+        String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?)";
+        String query3 = "INSERT INTO aprendiz(n_documento,ficha) VALUES(?,?)";
+        try(Connection con = ConexionDB.getConnection();){
+            try(PreparedStatement ps1 = con.prepareStatement(query1)){
+                ps1.setInt(1,n_documento);
+                ps1.setString(2,correo_electronico);
+                ps1.setString(3,password);
+                ps1.executeUpdate();
+            }
+            try(PreparedStatement ps2 = con.prepareStatement(query2)){
+                ps2.setString(1,tipo_documento);
+                ps2.setInt(2,n_documento);
+                ps2.setString(3,nombres);
+                ps2.setString(4,apellidos);
+                ps2.executeUpdate();
+            }
+            try(PreparedStatement ps3 = con.prepareStatement(query3)){
+                ps3.setInt(1,n_documento);
+                ps3.setInt(2,ficha);
+                ps3.executeUpdate();
+            }
+        } catch(SQLException e){
+            System.out.println("Error al insetar el registro"+e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public void crearUsuarioFuncionario(String tipo_documento,int n_documento,String nombres,String apellidos, String correo_electronico, String password, String cargo){
+        String query1 = "INSERT INTO usuario(n_documento,correo_electronico,password,rol) VALUES(?,?,crypt(?,gen_salt('bf')),'funcionario')";
+        String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?)";
+        String query3 = "INSERT INTO funcionario(n_documento,cargo) VALUES(?,?)";
+
+        try(Connection con = ConexionDB.getConnection();){
+            try(PreparedStatement ps1 = con.prepareStatement(query1)){
+                ps1.setInt(1,n_documento);
+                ps1.setString(2,correo_electronico);
+                ps1.setString(3,password);
+                ps1.executeUpdate();
+
+            }
+            try(PreparedStatement ps2 = con.prepareStatement(query2)){
+                ps2.setString(1,tipo_documento);
+                ps2.setInt(2,n_documento);
+                ps2.setString(3,nombres);
+                ps2.setString(4,apellidos);
+                ps2.executeUpdate();
+            }
+            try(PreparedStatement ps3 = con.prepareStatement(query3)){
+                ps3.setInt(1,n_documento);
+                ps3.setString(2,cargo);
+                ps3.executeUpdate();
+            }
+        } catch(SQLException ex){
+            System.out.println("Error al insetar el registro");
+            ex.printStackTrace();
+        }
+    }
     public List<Object[]> mostrarAprendices(){
         List<Object[]> listaAprendices = new ArrayList<>();
         String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres, detalle_usuario.apellidos, detalle_usuario.fecha_creacion FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento WHERE usuario.rol = 'aprendiz'";
@@ -60,150 +118,81 @@ public class Admin {
     public List<Object[]> mostrarUsuario( int numero){
         List<Object[]> listaUsuario = new ArrayList<>();
         String rol = "";
-        String query ="SELECT rol FROM usuario WHERE n_documento = ?;";
-        try{
-            Connection con = ConexionDB.getConnection();
-            try(PreparedStatement ps1 = con.prepareStatement(query)){
+        String query1 ="SELECT rol FROM usuario WHERE n_documento = ?;";
+        String query2 ="SELECT detalle_usuario.tipo_documento, usuario.n_documento,detalle_usuario.nombres,detalle_usuario.apellidos,usuario.correo_electronico,usuario.rol,aprendiz.ficha FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento INNER JOIN aprendiz ON usuario.n_documento = aprendiz.n_documento WHERE usuario.n_documento= ?";
+        String query3 ="SELECT detalle_usuario.tipo_documento, usuario.n_documento,detalle_usuario.nombres,detalle_usuario.apellidos,usuario.correo_electronico,usuario.rol,funcionario.cargo FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento INNER JOIN funcionario ON usuario.n_documento = funcionario.n_documento WHERE usuario.n_documento= ?";
+
+        try(Connection con = ConexionDB.getConnection();){
+            try(PreparedStatement ps1 = con.prepareStatement(query1)){
                 ps1.setInt(1,numero);
                 ResultSet rs = ps1.executeQuery();
                 if(rs.next()){
                     rol = rs.getString("rol");
                 }
             }
+            if(rol.equals("aprendiz")){
+                try(PreparedStatement ps2= con.prepareStatement(query2)){
+                    ps2.setInt(1, numero);
+                        ResultSet rs = ps2.executeQuery();
+                        while(rs.next()) {
+                            Object[] arreglo = new Object[7];
+                            arreglo[0] = rs.getString("tipo_documento");
+                            arreglo[1] = rs.getInt("n_documento");
+                            arreglo[2] = rs.getString("nombres");
+                            arreglo[3] = rs.getString("apellidos");
+                            arreglo[4] = rs.getString("rol");
+                            arreglo[5] = rs.getInt("ficha");
+                            arreglo[6] = rs.getString("correo_electronico");
+                            listaUsuario.add(arreglo);
+                        }
+                    }
+            }else if(rol.equals("funcionario")){
+                    try(PreparedStatement ps3= con.prepareStatement(query3)){
+                        ps3.setInt(1, numero);
+                        ResultSet rs = ps3.executeQuery();
+                        while(rs.next()) {
+                            Object[] arreglo = new Object[7];
+                            arreglo[0] = rs.getString("tipo_documento");
+                            arreglo[1] = rs.getInt("n_documento");
+                            arreglo[2] = rs.getString("nombres");
+                            arreglo[3] = rs.getString("apellidos");
+                            arreglo[4] = rs.getString("rol");
+                            arreglo[5] = rs.getString("cargo");
+                            arreglo[6] = rs.getString("correo_electronico");
+                            listaUsuario.add(arreglo);
+                        }
+                    }
+            }
         }catch (SQLException e){
-            System.out.println("Error: "+ e.getMessage());
-        }
-        if(rol.equals("aprendiz")){
-            String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento,detalle_usuario.nombres,detalle_usuario.apellidos,usuario.correo_electronico,usuario.rol,aprendiz.ficha FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento INNER JOIN aprendiz ON usuario.n_documento = aprendiz.n_documento WHERE usuario.n_documento= ?";
-            try{
-                Connection con = ConexionDB.getConnection();
-                try(PreparedStatement query1= con.prepareStatement(consulta)){
-                    query1.setInt(1, numero);
-                    ResultSet rs = query1.executeQuery();
-                    while(rs.next()) {
-                        Object[] arreglo = new Object[6];
-                        arreglo[0] = rs.getString("tipo_documento");
-                        arreglo[1] = rs.getInt("n_documento");
-                        arreglo[2] = rs.getString("nombres");
-                        arreglo[3] = rs.getString("apellidos");
-                        arreglo[4] = rs.getString("rol");
-                        arreglo[5] = rs.getInt("ficha");
-                        listaUsuario.add(arreglo);
-                    }
-                }
-            }catch (SQLException e){
-                System.out.println("Error: " + e.getMessage());
-            }
-        }else if(rol.equals("funcionario")){
-            String consulta ="SELECT detalle_usuario.tipo_documento, usuario.n_documento,detalle_usuario.nombres,detalle_usuario.apellidos,usuario.correo_electronico,usuario.rol,funcionario.cargo FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento INNER JOIN funcionario ON usuario.n_documento = funcionario.n_documento WHERE usuario.n_documento= ?";
-            try{
-                Connection con = ConexionDB.getConnection();
-                try(PreparedStatement query2= con.prepareStatement(consulta)){
-                    query2.setInt(1, numero);
-                    ResultSet rs = query2.executeQuery();
-                    while(rs.next()) {
-                        Object[] arreglo = new Object[6];
-                        arreglo[0] = rs.getString("tipo_documento");
-                        arreglo[1] = rs.getInt("n_documento");
-                        arreglo[2] = rs.getString("nombres");
-                        arreglo[3] = rs.getString("apellidos");
-                        arreglo[4] = rs.getString("rol");
-                        arreglo[5] = rs.getString("cargo");
-                        listaUsuario.add(arreglo);
-                    }
-                }
-            }catch (SQLException e){
-                System.out.println("Error: " + e.getMessage());
-            }
+            System.out.println("Error: " + e.getMessage());
         }return listaUsuario;
     }
-
-    public void crearUsuarioAprendiz(String tipo_documento,int n_documento,String nombres,String apellidos, String correo_electronico, String password, int ficha){
-        String query1 = "INSERT INTO usuario(n_documento,correo_electronico,password,rol) VALUES(?,?,crypt(?,gen_salt('bf')),'aprendiz')";
-        String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?)";
-        String query3 = "INSERT INTO aprendiz(n_documento,ficha) VALUES(?,?)";
-
-        try(Connection con = ConexionDB.getConnection();){
-            try(PreparedStatement ps1 = con.prepareStatement(query1)){
-                ps1.setInt(1,n_documento);
-                ps1.setString(2,correo_electronico);
-                ps1.setString(3,password);
-                ps1.executeUpdate();
-
-            }
-            try(PreparedStatement ps2 = con.prepareStatement(query2)){
-                ps2.setString(1,tipo_documento);
-                ps2.setInt(2,n_documento);
-                ps2.setString(3,nombres);
-                ps2.setString(4,apellidos);
-                ps2.executeUpdate();
-            }
-            try(PreparedStatement ps3 = con.prepareStatement(query3)){
-                ps3.setInt(1,n_documento);
-                ps3.setInt(2,ficha);
-                ps3.executeUpdate();
-            }
-        } catch(SQLException ex){
-            System.out.println("Error al insetar el registro");
-            ex.printStackTrace();
-        }
-    }
-    public void crearUsuarioFuncionario(String tipo_documento,int n_documento,String nombres,String apellidos, String correo_electronico, String password, String cargo){
-        String query1 = "INSERT INTO usuario(n_documento,correo_electronico,password,rol) VALUES(?,?,crypt(?,gen_salt('bf')),'funcionario')";
-        String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?)";
-        String query3 = "INSERT INTO funcionario(n_documento,cargo) VALUES(?,?)";
-
-        try(Connection con = ConexionDB.getConnection();){
-            try(PreparedStatement ps1 = con.prepareStatement(query1)){
-                ps1.setInt(1,n_documento);
-                ps1.setString(2,correo_electronico);
-                ps1.setString(3,password);
-                ps1.executeUpdate();
-
-            }
-            try(PreparedStatement ps2 = con.prepareStatement(query2)){
-                ps2.setString(1,tipo_documento);
-                ps2.setInt(2,n_documento);
-                ps2.setString(3,nombres);
-                ps2.setString(4,apellidos);
-                ps2.executeUpdate();
-            }
-            try(PreparedStatement ps3 = con.prepareStatement(query3)){
-                ps3.setInt(1,n_documento);
-                ps3.setString(2,cargo);
-                ps3.executeUpdate();
-            }
-        } catch(SQLException ex){
-            System.out.println("Error al insetar el registro");
-            ex.printStackTrace();
-        }
-    }
-    public void modificarUsuarioAprendiz(int n_documento, String nombres, String apellidos, String correo_electronico, String rol, int ficha) {
+    public void modificarUsuarioAprendiz(String tipo_documento, int n_documento, String nombres, String apellidos, String correo_electronico, String rol, int ficha) {
         String query1 = "UPDATE usuario SET correo_electronico = ?, rol = ? WHERE n_documento = ?";
-        String query2 = "UPDATE detalle_usuario SET nombres = ?, apellidos = ? WHERE n_documento = ?";
+        String query2 = "UPDATE detalle_usuario SET tipo_documento = ?, nombres = ?, apellidos = ? WHERE n_documento = ?";
         String query3 = "UPDATE aprendiz SET ficha = ? WHERE n_documento = ?";
 
         try (Connection con = ConexionDB.getConnection()) {
 
-            try (java.sql.PreparedStatement ps1 = con.prepareStatement(query1);
-                 java.sql.PreparedStatement ps2 = con.prepareStatement(query2);
-                 java.sql.PreparedStatement ps3 = con.prepareStatement(query3)) {
+            try (PreparedStatement ps1 = con.prepareStatement(query1);
+                 PreparedStatement ps2 = con.prepareStatement(query2);
+                 PreparedStatement ps3 = con.prepareStatement(query3)) {
 
                 ps1.setString(1, correo_electronico);
                 ps1.setString(2, rol);
                 ps1.setInt(3, n_documento);
                 ps1.executeUpdate();
 
-                ps2.setString(1, nombres);
-                ps2.setString(2, apellidos);
-                ps2.setInt(3, n_documento);
+                ps2.setString(1,tipo_documento);
+                ps2.setString(2, nombres);
+                ps2.setString(3, apellidos);
+                ps2.setInt(4, n_documento);
                 ps2.executeUpdate();
 
                 ps3.setInt(1, ficha);
                 ps3.setInt(2, n_documento);
                 ps3.executeUpdate();
 
-                con.commit();
                 System.out.println("Datos del aprendiz editados con exito");
 
             }
@@ -212,25 +201,25 @@ public class Admin {
             ex.printStackTrace();
         }
     }
-    public void modificarUsuarioFuncionario(int n_documento, String nombres, String apellidos, String correo_electronico, String rol, String cargo) {
+    public void modificarUsuarioFuncionario(String tipo_documento,int n_documento, String nombres, String apellidos, String correo_electronico, String rol, String cargo) {
         String query1 = "UPDATE usuario SET correo_electronico = ?, rol = ? WHERE n_documento = ?";
-        String query2 = "UPDATE detalle_usuario SET nombres = ?, apellidos = ? WHERE n_documento = ?";
+        String query2 = "UPDATE detalle_usuario SET tipo_documento = ?,nombres = ?, apellidos = ? WHERE n_documento = ?";
         String query3 = "UPDATE funcionario SET cargo = ? WHERE n_documento = ?";
 
         try (Connection con = ConexionDB.getConnection()) {
 
-            try (java.sql.PreparedStatement ps1 = con.prepareStatement(query1);
-                 java.sql.PreparedStatement ps2 = con.prepareStatement(query2);
-                 java.sql.PreparedStatement ps3 = con.prepareStatement(query3)) {
+            try (PreparedStatement ps1 = con.prepareStatement(query1);
+                 PreparedStatement ps2 = con.prepareStatement(query2);
+                 PreparedStatement ps3 = con.prepareStatement(query3)) {
 
                 ps1.setString(1, correo_electronico);
                 ps1.setString(2, rol);
                 ps1.setInt(3, n_documento);
                 ps1.executeUpdate();
-
-                ps2.setString(1, nombres);
-                ps2.setString(2, apellidos);
-                ps2.setInt(3, n_documento);
+                ps2.setString(1,tipo_documento);
+                ps2.setString(2, nombres);
+                ps2.setString(3, apellidos);
+                ps2.setInt(4, n_documento);
                 ps2.executeUpdate();
 
                 ps3.setString(1, cargo);
@@ -245,8 +234,17 @@ public class Admin {
             ex.printStackTrace();
         }
     }
-    public void eliminarUsuarios(){
-
+    public void eliminarUsuario(int n_documento){
+        String query = "DELETE FROM usuario WHERE n_documento= ?;";
+        try(Connection con = ConexionDB.getConnection()){
+            try(PreparedStatement ps1 = con.prepareStatement(query)){
+                ps1.setInt(1,n_documento);
+                ps1.executeUpdate();
+            }
+        }catch (SQLException e){
+            System.out.println("Error al eliminar el usuario"+ e.getMessage());
+        }
     }
-
+    public void generarTarjeta(){
+    }
 }

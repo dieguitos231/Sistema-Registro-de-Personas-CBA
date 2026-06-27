@@ -3,7 +3,8 @@ CREATE TABLE usuario
     n_documento        INT UNIQUE PRIMARY KEY,
     correo_electronico VARCHAR(100) UNIQUE NOT NULL,
     password           VARCHAR(255)        NOT NULL,
-    rol                VARCHAR(100) NOT NULL
+    rol                VARCHAR(100) NOT NULL,
+    primer_ingreso     BOOLEAN  DEFAULT  TRUE;
 )
 CREATE TABLE funcionario
 (
@@ -30,9 +31,9 @@ CREATE TABLE tarjeta_usuario
 (
     n_documento INT PRIMARY KEY ,
     codigo_tarjeta VARCHAR(255) NOT NULL,
-    estado VARCHAR(50) NOT NULL,
+    estado BOOLEAN DEFAULT TRUE,
     fecha_emision DATE DEFAULT  CURRENT_DATE NOT NULL,
-    fecha_expiracion DATE DEFAULT  CURRENT_DATE NOT NULL,
+    fecha_expiracion DATE  NOT NULL, CAMBIAR A QUE SE VENCE EN UN 1AÑO SEGUN LA FECHA DE EMISION
     FOREIGN KEY (n_documento) REFERENCES usuario(n_documento)
 )
 CREATE TABLE historial_ingreso
@@ -52,6 +53,6 @@ CREATE TABLE reporte
     estado VARCHAR(50) NOT NULL,
     fecha_solicitud TIMESTAMPTZ  DEFAULT  CURRENT_TIMESTAMP NOT NULL,
     fecha_soporte TIMESTAMPTZ DEFAULT  CURRENT_TIMESTAMP NOT NULL,
-    n_documento INT ,
+    n_documento INT,
     FOREIGN KEY  (n_documento) REFERENCES usuario(n_documento)
 )

@@ -100,13 +100,6 @@ public class Main {
         btnIngresar.addActionListener(event -> {
             String txtEmail = textEmail.getText();
             char[] txtPassword = textPassword.getPassword();
-            //Validacion entrada de texto
-            if (txtEmail.isEmpty() || txtPassword.length == 0) {
-                JOptionPane.showMessageDialog(null, "Por favor ingrese el email");
-            }
-            if (txtPassword.length == 0) {
-                JOptionPane.showMessageDialog(null, "Por favor ingrese el password");
-            }
             Usuario usuario = new Usuario();
             List<Object[]> dato = usuario.iniciarSesion(txtEmail, txtPassword);
             for (Object[] data : dato) {
@@ -171,7 +164,6 @@ public class Main {
         PanelAdmin.add(btnCloseSession);
 
         btnPanelUsuario.addActionListener(event -> panelUsuarios());
-//      btnPanelRegistros.addActionListener(event -> panelIngresos()) PENDIENTE
         btnCloseSession.addActionListener(event -> PanelAdmin.dispose());
         PanelAdmin.setVisible(true);
     }
@@ -221,7 +213,7 @@ public class Main {
 
         //Boton mostrar info de un usuario
         btnBuscarUsuario = new JButton("Buscar Usuario");
-        btnBuscarUsuario.setBackground(Color.RED);
+        btnBuscarUsuario.setBackground(azulclaro);
         btnBuscarUsuario.setBounds(80, 240, 200, 40);
         PanelUsuarios.add(btnBuscarUsuario);
 
@@ -350,6 +342,7 @@ public class Main {
         btnDeleteUser.addActionListener(event -> buscarUsuario("eliminar"));
         GestionUsuarios.setVisible(true);
     }
+
     private void crearUsuario() {
         //Labels
         JLabel titulo;
@@ -519,6 +512,7 @@ public class Main {
         });
         CrearUsuario.setVisible(true);
     }
+
     private void buscarUsuario(String panel) {
         //Labels
         JLabel titulo;
@@ -541,7 +535,7 @@ public class Main {
         BuscarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Titulo
         titulo = new JLabel("Buscar Usuario");
-        titulo.setForeground(colorSena);
+        titulo.setForeground(azulclaro);
         titulo.setFont(new Font("Serif", Font.BOLD, 24));
         titulo.setBounds(80, 20, 400, 30);
         BuscarUsuario.add(titulo);
@@ -572,32 +566,41 @@ public class Main {
             BuscarUsuario.dispose();
         });
         btnBuscar.addActionListener(event -> {
-            Integer numero=convertirNumero(n_documento.getText());
-            switch(panel){
-                case "actualizar":
-                    actualizarInfoUsuario(numero);
-                    break;
-                case "eliminar":
-                    eliminarUsuario(numero);
-                    break;
+            Integer numero = convertirNumero(n_documento.getText());
+            Admin admin = new Admin();
+            List<Object[]> lista = admin.mostrarUsuario(numero);
+            if (lista.size() > 0) {
+                switch (panel) {
+                    case "actualizar":
+                        actualizarInfoUsuario(numero, lista);
+                        BuscarUsuario.dispose();
+                        break;
+                    case "eliminar":
+                        eliminarUsuario(numero, lista);
+                        BuscarUsuario.dispose();
+                        break;
+                }
+            }else{
+                JOptionPane.showMessageDialog(null, "Usuario no encontrado");
             }
             n_documento.setText("");
         });
         BuscarUsuario.setVisible(true);
     }
-    private void actualizarInfoUsuario(int n_documento){
+
+    private void actualizarInfoUsuario(int n_documento, List<Object[]> lista) {
         //Labels
         JLabel titulo;
         JLabel lblTituloId;
-        JLabel lblNumeroId;
+        JLabel lblEmail;
         JLabel lblNombre;
         JLabel lblApellido;
         JLabel lblRol;
         JLabel lblInfo;
 
         //Inputs
-        JTextField infTituloId;
-        JTextField infNumeroId;
+        JComboBox<String> infTituloId;
+        JTextField infEmail;
         JTextField infNombre;
         JTextField infApellido;
         JTextField infRol;
@@ -607,97 +610,133 @@ public class Main {
         JButton btnCancel;
         JButton btnUpdate;
 
-        JFrame ActualizarUsuario=new JFrame();
+        JFrame ActualizarUsuario = new JFrame();
         ActualizarUsuario.setTitle("Panel modificar informacion usuario");
-        ActualizarUsuario.setSize(500,350);
+        ActualizarUsuario.setSize(500, 350);
         ActualizarUsuario.setLocationRelativeTo(null);
         ActualizarUsuario.setLayout(null);
         ActualizarUsuario.setResizable(false);
         ActualizarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Titulo
-        titulo=new JLabel("Modificar Usuario");
+        titulo = new JLabel("Modificar Usuario");
         titulo.setForeground(Color.ORANGE);
-        titulo.setFont(new Font("Serif",Font.BOLD,24));
-        titulo.setBounds(40,20,300,50);
+        titulo.setFont(new Font("Serif", Font.BOLD, 24));
+        titulo.setBounds(40, 20, 300, 50);
         ActualizarUsuario.add(titulo);
 
         //Tipo de identificacion
-        lblTituloId=new JLabel("T.I:");
-        lblTituloId.setBounds(40,80,50,30);
+        lblTituloId = new JLabel("T.I:");
+        lblTituloId.setBounds(40, 80, 50, 30);
         ActualizarUsuario.add(lblTituloId);
 
-        infTituloId=new JTextField();
-        infTituloId.setBounds(100,80,50,30);
+        String[] tipos = {
+                "CC",
+                "TI",
+                "CE",
+                "PPT"
+        };
+        infTituloId = new JComboBox<>(tipos);
+        infTituloId.setBounds(100, 80, 50, 30);
         ActualizarUsuario.add(infTituloId);
 
         //Numero de identificacion
-        lblNumeroId=new JLabel("Numero de identificación:");
-        lblNumeroId.setBounds(160,80,150,30);
-        ActualizarUsuario.add(lblNumeroId);
+        lblEmail = new JLabel("Correo electronico:");
+        lblEmail.setBounds(160, 80, 150, 30);
+        ActualizarUsuario.add(lblEmail);
 
-        infNumeroId=new JTextField();
-        infNumeroId.setBounds(320,80,100,30);
-        ActualizarUsuario.add(infNumeroId);
+        infEmail = new JTextField();
+        infEmail.setBounds(320, 80, 100, 30);
+        ActualizarUsuario.add(infEmail);
 
         //Nombre
-        lblNombre=new JLabel("Nombres:");
-        lblNombre.setBounds(40,120,100,30);
+        lblNombre = new JLabel("Nombres:");
+        lblNombre.setBounds(40, 120, 100, 30);
         ActualizarUsuario.add(lblNombre);
 
-        infNombre=new JTextField();
-        infNombre.setBounds(100,120,100,30);
+        infNombre = new JTextField();
+        infNombre.setBounds(100, 120, 100, 30);
         ActualizarUsuario.add(infNombre);
 
         //Apellido
-        lblApellido=new JLabel("Apellidos:");
-        lblApellido.setBounds(260,120,100,30);
+        lblApellido = new JLabel("Apellidos:");
+        lblApellido.setBounds(260, 120, 100, 30);
         ActualizarUsuario.add(lblApellido);
 
-        infApellido=new JTextField();
-        infApellido.setBounds(320,120,100,30);
+        infApellido = new JTextField();
+        infApellido.setBounds(320, 120, 100, 30);
         ActualizarUsuario.add(infApellido);
 
         //Rol
-        lblRol=new JLabel("Rol:");
-        lblRol.setBounds(40,160,100,30);
+        lblRol = new JLabel("Rol:");
+        lblRol.setBounds(40, 160, 100, 30);
         ActualizarUsuario.add(lblRol);
 
-        infRol=new JTextField();
-        infRol.setBounds(100,160,100,30);
+        infRol = new JTextField();
+        infRol.setBounds(100, 160, 100, 30);
         ActualizarUsuario.add(infRol);
 
         //Info
-        lblInfo=new JLabel("Ficha:");
-        lblInfo.setBounds(260,160,80,30);
+        lblInfo = new JLabel("Ficha:");
+        lblInfo.setBounds(260, 160, 80, 30);
         ActualizarUsuario.add(lblInfo);
 
-        info=new JTextField();
-        info.setBounds(320,160,100,30);
+        info = new JTextField();
+        info.setBounds(320, 160, 100, 30);
         ActualizarUsuario.add(info);
 
         //Boton cancelar
-        btnCancel=new JButton("Cancelar");
+        btnCancel = new JButton("Cancelar");
         btnCancel.setBackground(Color.white);
-        btnCancel.setBounds(200,240,100,30);
+        btnCancel.setBounds(200, 240, 100, 30);
         ActualizarUsuario.add(btnCancel);
 
         //Boton eliminar
-        btnUpdate=new JButton("Modificar");
+        btnUpdate = new JButton("Modificar");
         btnUpdate.setBackground(Color.ORANGE);
-        btnUpdate.setBounds(320,240,100,30);
+        btnUpdate.setBounds(320, 240, 100, 30);
         ActualizarUsuario.add(btnUpdate);
+
+        for (Object[] elemento : lista) {
+            infTituloId.setSelectedItem(elemento[0].toString());
+            infEmail.setText(elemento[6].toString());
+            infNombre.setText(elemento[2].toString());
+            infApellido.setText(elemento[3].toString());
+            infRol.setText(elemento[4].toString());
+            if (elemento[4].equals("aprendiz")) {
+                lblInfo.setText("Ficha: ");
+                info.setText(elemento[5].toString());
+            } else if (elemento[4].equals("funcionario")) {
+                lblInfo.setText("Cargo: ");
+                info.setText(elemento[5].toString());
+            }
+        }
+        ;
 
         btnCancel.addActionListener(event -> {
             ActualizarUsuario.dispose();
         });
         btnUpdate.addActionListener(event -> {
-           System.out.println("Modificando usuario");
+            Admin admin = new Admin();
+            String tipo = infTituloId.getSelectedItem().toString();
+            String emailDg = infEmail.getText();
+            String nombres = infNombre.getText();
+            String apellidos = infApellido.getText();
+            String rol = infRol.getText();
+            if (infRol.getText().equals("aprendiz")) {
+                Integer infor = convertirNumero(info.getText());
+                admin.modificarUsuarioAprendiz(tipo, n_documento, nombres, apellidos, emailDg, rol, infor);
+            } else if (infRol.getText().equals("funcionario")) {
+                String cargo = info.getText();
+                admin.modificarUsuarioFuncionario(tipo, n_documento, nombres, apellidos, emailDg, rol, cargo);
+            }
+            ActualizarUsuario.dispose();
         });
 
         ActualizarUsuario.setVisible(true);
     }
-    private void eliminarUsuario(int n_documento) {
+
+    private void eliminarUsuario(int n_documento, List<Object[]> lista) {
         //Inputs
         JLabel titulo;
         JLabel lblTituloId;
@@ -737,7 +776,7 @@ public class Main {
         lblTituloId.setBounds(80, 80, 50, 30);
         EliminarUsuario.add(lblTituloId);
 
-        infTituloId = new JLabel("T.I");
+        infTituloId = new JLabel();
         infTituloId.setForeground(Color.GRAY);
         infTituloId.setBounds(100, 80, 50, 30);
         EliminarUsuario.add(infTituloId);
@@ -747,7 +786,7 @@ public class Main {
         lblNumeroId.setBounds(140, 80, 150, 30);
         EliminarUsuario.add(lblNumeroId);
 
-        infNumeroId = new JLabel("1031807049");
+        infNumeroId = new JLabel();
         infNumeroId.setForeground(Color.GRAY);
         infNumeroId.setBounds(300, 80, 150, 30);
         EliminarUsuario.add(infNumeroId);
@@ -757,29 +796,29 @@ public class Main {
         lblNombre.setBounds(80, 100, 100, 30);
         EliminarUsuario.add(lblNombre);
 
-        infNombre = new JLabel("Luis");
+        infNombre = new JLabel();
         infNombre.setForeground(Color.GRAY);
         infNombre.setBounds(140, 100, 200, 30);
         EliminarUsuario.add(infNombre);
 
         //Rol
-        lblRol = new JLabel("Rol:");
+        lblRol = new JLabel("Rol: ");
         lblRol.setBounds(80, 120, 100, 30);
         EliminarUsuario.add(lblRol);
 
         infRol = new JLabel();
         infRol.setForeground(Color.GRAY);
-        infRol.setBounds(140, 120, 150, 30);
+        infRol.setBounds(120, 120, 150, 30);
         EliminarUsuario.add(infRol);
 
         //Info
-        lblInfo = new JLabel("Ficha:");
+        lblInfo = new JLabel();
         lblInfo.setBounds(200, 120, 80, 30);
         EliminarUsuario.add(lblInfo);
 
-        info = new JLabel("2877742");
+        info = new JLabel();
         info.setForeground(Color.GRAY);
-        info.setBounds(260, 120, 200, 30);
+        info.setBounds(280, 120, 200, 30);
         EliminarUsuario.add(info);
 
         //Boton cancelar
@@ -794,16 +833,31 @@ public class Main {
         btnDelete.setBounds(320, 200, 100, 30);
         EliminarUsuario.add(btnDelete);
 
+        for (Object[] elemento : lista) {
+            infTituloId.setText(elemento[0].toString());
+            infNumeroId.setText(elemento[1].toString());
+            infNombre.setText(elemento[2].toString() + " " + elemento[3].toString());
+            infRol.setText(elemento[4].toString());
+            if (elemento[4].equals("aprendiz")) {
+                lblInfo.setText("Ficha :");
+                info.setText(elemento[5].toString());
+            } else if (elemento[4].equals("funcionario")) {
+                lblInfo.setText("Funcionario :");
+                info.setText(elemento[5].toString());
+            }
+        }
         btnCancel.addActionListener(event -> {
             EliminarUsuario.dispose();
         });
 
         btnDelete.addActionListener(event -> {
-//            JOptionPane.showMessageDialog(null,"Usuario "+infNombre.getText()+" eliminado.");
-            System.out.println("Eliminando usuario");
+            Admin admin = new Admin();
+            admin.eliminarUsuario(n_documento);
+            EliminarUsuario.dispose();
         });
         EliminarUsuario.setVisible(true);
     }
+
     private void mostrarUsuarios() {
         //labels
         JLabel titulo;
@@ -813,41 +867,41 @@ public class Main {
         JButton btnAprendices;
 
         //Configuracion Ventana
-        JFrame MostrarUsuario = new JFrame();
-        MostrarUsuario.setTitle("Mostrar Usuario");
-        MostrarUsuario.setSize(400, 300);
-        MostrarUsuario.setLocationRelativeTo(null);
-        MostrarUsuario.setLayout(null);
-        MostrarUsuario.setResizable(false);
-        MostrarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JFrame MostrarUsuarios = new JFrame();
+        MostrarUsuarios.setTitle("Mostrar Usuario");
+        MostrarUsuarios.setSize(400, 300);
+        MostrarUsuarios.setLocationRelativeTo(null);
+        MostrarUsuarios.setLayout(null);
+        MostrarUsuarios.setResizable(false);
+        MostrarUsuarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Volver
         btnReturn = new JButton("Volver");
         btnReturn.setBackground(Color.RED);
         btnReturn.setForeground(Color.WHITE);
         btnReturn.setBounds(40, 20, 100, 30);
-        MostrarUsuario.add(btnReturn);
+        MostrarUsuarios.add(btnReturn);
 
         //Titulo
         titulo = new JLabel("Mostrar Usuarios");
         titulo.setFont(new Font("Serif", Font.BOLD, 24));
         titulo.setBounds(100, 40, 400, 100);
-        MostrarUsuario.add(titulo);
+        MostrarUsuarios.add(titulo);
 
         //Boton funcionarios
         btnFuncionarios = new JButton("Funcionarios");
         btnFuncionarios.setBackground(colorSecundario);
         btnFuncionarios.setBounds(100, 120, 150, 40);
-        MostrarUsuario.add(btnFuncionarios);
+        MostrarUsuarios.add(btnFuncionarios);
 
         //Boton aprendices
         btnAprendices = new JButton("Aprendices");
         btnAprendices.setBackground(Color.YELLOW);
         btnAprendices.setBounds(100, 180, 150, 40);
-        MostrarUsuario.add(btnAprendices);
+        MostrarUsuarios.add(btnAprendices);
         btnReturn.addActionListener(event -> {
-            MostrarUsuario.setVisible(false);
-            MostrarUsuario.dispose();
+            MostrarUsuarios.setVisible(false);
+            MostrarUsuarios.dispose();
         });
         btnFuncionarios.addActionListener(event -> {
             mostrarFuncionarios();
@@ -855,8 +909,9 @@ public class Main {
         btnAprendices.addActionListener(event -> {
             mostrarAprendices();
         });
-        MostrarUsuario.setVisible(true);
+        MostrarUsuarios.setVisible(true);
     }
+
     private void mostrarAprendices() {
         JFrame MostrarAprendices = new JFrame();
         MostrarAprendices.setTitle("Mostrar Aprendices");
@@ -891,9 +946,8 @@ public class Main {
             JOptionPane.showMessageDialog(null, "No existen datos encontrados");
             MostrarAprendices.setVisible(false);
         }
-
-
     }
+
     private void mostrarFuncionarios() {
         JFrame MostrarFuncionarios = new JFrame();
         MostrarFuncionarios.setTitle("Mostrar Funcionarios");
@@ -929,6 +983,7 @@ public class Main {
             MostrarFuncionarios.setVisible(false);
         }
     }
+
     private void mostrarUsuario() {
         //Labels
         JLabel titulo;
@@ -966,10 +1021,9 @@ public class Main {
         btnReturn.setBounds(40, 20, 80, 30);
         MostrarUsuario.add(btnReturn);
 
-
         //Titulo
         titulo = new JLabel("Consultar Usuario");
-        titulo.setForeground(colorSecundario);
+        titulo.setForeground(azulclaro);
         titulo.setFont(new Font("Serif", Font.BOLD, 24));
         titulo.setBounds(80, 60, 300, 30);
         MostrarUsuario.add(titulo);
@@ -983,7 +1037,7 @@ public class Main {
         numeroDigitado.setBounds(80, 120, 150, 30);
         MostrarUsuario.add(numeroDigitado);
 
-        btnBuscar = new JButton("BUSCAR");
+        btnBuscar = new JButton("Buscar");
         btnBuscar.setBackground(azulclaro);
         btnBuscar.setForeground(Color.WHITE);
         btnBuscar.setBounds(240, 120, 100, 30);
@@ -995,6 +1049,7 @@ public class Main {
         MostrarUsuario.add(lblTipoId);
 
         infTipoId = new JLabel();
+        infTipoId.setForeground(Color.GRAY);
         infTipoId.setBounds(120, 160, 100, 30);
         MostrarUsuario.add(infTipoId);
 
@@ -1004,6 +1059,7 @@ public class Main {
         MostrarUsuario.add(lblNumero);
 
         infNumeroId = new JLabel();
+        infNumeroId.setForeground(Color.GRAY);
         infNumeroId.setBounds(360, 160, 100, 30);
         MostrarUsuario.add(infNumeroId);
 
@@ -1013,6 +1069,7 @@ public class Main {
         MostrarUsuario.add(lblNombre);
 
         infNombre = new JLabel();
+        infNombre.setForeground(Color.GRAY);
         infNombre.setBounds(140, 180, 300, 30);
         MostrarUsuario.add(infNombre);
 
@@ -1022,6 +1079,7 @@ public class Main {
         MostrarUsuario.add(lblRol);
 
         infRol = new JLabel();
+        infRol.setForeground(Color.GRAY);
         infRol.setBounds(120, 200, 100, 30);
         MostrarUsuario.add(infRol);
 
@@ -1031,8 +1089,10 @@ public class Main {
         MostrarUsuario.add(txt);
 
         info = new JLabel();
+        info.setForeground(Color.GRAY);
         info.setBounds(300, 200, 150, 30);
         MostrarUsuario.add(info);
+
         btnReturn.addActionListener(event -> {
             MostrarUsuario.dispose();
         });
@@ -1042,11 +1102,10 @@ public class Main {
             Admin admin = new Admin();
             List<Object[]> lista = admin.mostrarUsuario(numero);
             for (Object[] arreglo : lista) {
-                String tipo = (String) arreglo[0];
-                Integer intNumero = (Integer) arreglo[1];
-                String nombres = (String) arreglo[2];
-                String apellidos = (String) arreglo[3];
-                String rol = (String) arreglo[4];
+                infTipoId.setText(arreglo[0].toString());
+                infNumeroId.setText(arreglo[1].toString());
+                infNombre.setText(arreglo[2].toString() + " " + arreglo[3].toString());
+                infRol.setText(arreglo[4].toString());
                 if (arreglo[4].equals("aprendiz")) {
                     Integer ficha = (Integer) arreglo[5];
                     txt.setText("Ficha: ");
@@ -1056,11 +1115,6 @@ public class Main {
                     txt.setText("Cargo: ");
                     info.setText(cargo);
                 }
-                infTipoId.setText(tipo);
-                infNumeroId.setText(intNumero.toString());
-                infNombre.setText(nombres + " " + apellidos);
-                infRol.setText(rol);
-
             }
         });
 
