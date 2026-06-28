@@ -194,7 +194,7 @@ public class Main {
         PanelUsuarios.setLocationRelativeTo(null);
         PanelUsuarios.setLayout(null);
         PanelUsuarios.setResizable(false);
-        PanelUsuarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        PanelUsuarios.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Boton Volver
         btnReturn = new JButton("Volver");
@@ -232,8 +232,14 @@ public class Main {
             gestionUsuarios();
             PanelUsuarios.dispose();
         });
-        btnMostrarUsuario.addActionListener(event -> mostrarUsuarios());
-        btnBuscarUsuario.addActionListener(event -> mostrarUsuario());
+        btnMostrarUsuario.addActionListener(event -> {
+            panelMostrarUsuarios();
+            PanelUsuarios.dispose();
+        });
+        btnBuscarUsuario.addActionListener(event -> {
+            mostrarUsuario();
+            PanelUsuarios.dispose();
+        });
         PanelUsuarios.setVisible(true);
     }
 
@@ -252,7 +258,7 @@ public class Main {
         PrimerIngreso.setLocationRelativeTo(null);
         PrimerIngreso.setLayout(null);
         PrimerIngreso.setResizable(false);
-        PrimerIngreso.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        PrimerIngreso.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Titulo
         titulo = new JLabel("Ingrese la nueva contraseña");
@@ -307,7 +313,7 @@ public class Main {
         GestionUsuarios.setLocationRelativeTo(null);
         GestionUsuarios.setLayout(null);
         GestionUsuarios.setResizable(false);
-        GestionUsuarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        GestionUsuarios.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Boton Volver
         btnReturn = new JButton("Volver");
@@ -347,9 +353,15 @@ public class Main {
             GestionUsuarios.dispose();
             panelUsuarios();
         });
-        btnCreateUser.addActionListener(event -> crearUsuario());
-        btnUpdateUser.addActionListener(event -> buscarUsuario("actualizar"));
-        btnDeleteUser.addActionListener(event -> buscarUsuario("eliminar"));
+        btnCreateUser.addActionListener(event -> {
+            crearUsuario();
+        });
+        btnUpdateUser.addActionListener(event -> {
+            buscarUsuario("actualizar");
+        });
+        btnDeleteUser.addActionListener(event -> {
+            buscarUsuario("eliminar");
+        });
         GestionUsuarios.setVisible(true);
     }
 
@@ -363,10 +375,10 @@ public class Main {
         JLabel lblRol;
         //Inputs
         JComboBox<String> tipoId;
-        JTextField numeroId;
-        JTextField nombre;
-        JTextField apellido;
-        JTextField correo_electronico;
+        JTextField inpNumeroId;
+        JTextField inpNombre;
+        JTextField inpApellido;
+        JTextField inpCorreoElectronico;
         JComboBox<String> rol;
         //Botones
         JButton create;
@@ -379,13 +391,12 @@ public class Main {
         CrearUsuario.setLocationRelativeTo(null);
         CrearUsuario.setLayout(null);
         CrearUsuario.setResizable(false);
-        CrearUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        CrearUsuario.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Titulo
         titulo = new JLabel("Crear Nuevo Usuario");
-        titulo.setForeground(colorSena);
-        titulo.setFont(new Font("Serif", Font.BOLD, 24));
-        titulo.setBounds(80, 20, 300, 30);
+        titulo.setFont(new Font("Serif", Font.PLAIN, 24));
+        titulo.setBounds(120, 20, 300, 40);
         CrearUsuario.add(titulo);
 
         //Tipo ID
@@ -409,36 +420,36 @@ public class Main {
         lblNumeroId.setBounds(250, 60, 150, 30);
         CrearUsuario.add(lblNumeroId);
 
-        numeroId = new JTextField();
-        numeroId.setBounds(250, 100, 150, 30);
-        CrearUsuario.add(numeroId);
+        inpNumeroId = new JTextField();
+        inpNumeroId.setBounds(250, 100, 150, 30);
+        CrearUsuario.add(inpNumeroId);
 
         //NOMBRE
         lblNombre = new JLabel("Nombre");
         lblNombre.setBounds(60, 140, 150, 30);
         CrearUsuario.add(lblNombre);
 
-        nombre = new JTextField();
-        nombre.setBounds(60, 180, 150, 30);
-        CrearUsuario.add(nombre);
+        inpNombre = new JTextField();
+        inpNombre.setBounds(60, 180, 150, 30);
+        CrearUsuario.add(inpNombre);
 
         //Apellidos
         lblApellidos = new JLabel("Apellidos");
         lblApellidos.setBounds(250, 140, 150, 30);
         CrearUsuario.add(lblApellidos);
 
-        apellido = new JTextField();
-        apellido.setBounds(250, 180, 150, 30);
-        CrearUsuario.add(apellido);
+        inpApellido= new JTextField();
+        inpApellido.setBounds(250, 180, 150, 30);
+        CrearUsuario.add(inpApellido);
 
         //Email
         lblEmail = new JLabel("Correo electronico");
         lblEmail.setBounds(60, 220, 200, 30);
         CrearUsuario.add(lblEmail);
 
-        correo_electronico = new JTextField();
-        correo_electronico.setBounds(60, 250, 150, 30);
-        CrearUsuario.add(correo_electronico);
+        inpCorreoElectronico= new JTextField();
+        inpCorreoElectronico.setBounds(60, 250, 150, 30);
+        CrearUsuario.add(inpCorreoElectronico);
 
         //ROL
         lblRol = new JLabel("Rol");
@@ -447,75 +458,85 @@ public class Main {
 
         String[] opcionesRol = {
                 "aprendiz",
-                "funcionario",
-                "administrador"
+                "funcionario"
         };
         rol = new JComboBox<>(opcionesRol);
         rol.setBackground(Color.WHITE);
         rol.setBounds(230, 250, 100, 30);
         CrearUsuario.add(rol);
 
-        //CAMPO SEGUN ROL SELECCIONADO
-        JLabel lblRolSelected = new JLabel("Ficha");
+        //Rol
+        JLabel lblRolSelected = new JLabel();
         lblRolSelected.setBounds(340, 220, 100, 30);
         CrearUsuario.add(lblRolSelected);
 
-        JTextField txt = new JTextField();
-        txt.setBounds(340, 250, 100, 30);
-        CrearUsuario.add(txt);
+        //numero ficha o cargo
+        JTextField inpNumeroFicha = new JTextField();
+        inpNumeroFicha.setBounds(340, 250, 100, 30);
+        CrearUsuario.add(inpNumeroFicha);
+
+        String[] opcionesCargos={
+          "Directivo",
+          "Instructor",
+          "Profesional/Administrativo",
+          "Tecnico/Auxiliar",
+          "Servicios generales"
+        };
+        JComboBox<String> cargo =new JComboBox<>(opcionesCargos);
+        cargo.setBounds(340, 250, 100, 30);
+        CrearUsuario.add(cargo);
 
         rol.addActionListener(event -> {
-            String itemSeleccionado = (String) rol.getSelectedItem();
+            String rolSeleccionado = (String) rol.getSelectedItem();
             lblRolSelected.setVisible(true);
-            txt.setVisible(true);
-            if (itemSeleccionado.equals("aprendiz")) {
+            if (rolSeleccionado.equals("aprendiz")) {
                 lblRolSelected.setText("Ficha");
-            } else if (itemSeleccionado.equals("funcionario")) {
+                cargo.setVisible(false);
+                inpNumeroFicha.setVisible(true);
+            } else if (rolSeleccionado.equals("funcionario")) {
                 lblRolSelected.setText("Cargo");
-            } else {
-                lblRolSelected.setVisible(false);
-                txt.setVisible(false);
+                inpNumeroFicha.setVisible(false);
+                cargo.setVisible(true);
             }
         });
 
-        //CREAR
+        //Boton crear
         create = new JButton("CREAR");
         create.setBackground(azulclaro);
         create.setBounds(330, 300, 100, 30);
         CrearUsuario.add(create);
 
-        //CANCELAR
+        //Boton cancelar
         cancel = new JButton("CANCELAR");
         cancel.setBackground(Color.WHITE);
         cancel.setBounds(200, 300, 100, 30);
         CrearUsuario.add(cancel);
 
+        Admin admin = new Admin();
         create.addActionListener(event -> {
             String tipo = tipoId.getSelectedItem().toString();
-            String numero = numeroId.getText();
-            Integer numeroIdConvertido = convertirNumero(numero);
-            String nombres = nombre.getText().toLowerCase();
-            String apellidos = apellido.getText().toLowerCase();
-            String email = correo_electronico.getText();
-            String password = numeroId.getText();
+            Integer numeroId =convertirNumero(inpNumeroId.getText());
+            String nombres = inpNombre.getText().toLowerCase();
+            String apellidos = inpApellido.getText().toLowerCase();
+            String email = inpCorreoElectronico.getText();
+            String password = inpNumeroId.getText();
             String rolAsignado = rol.getSelectedItem().toString();
-            String txtDigitado = txt.getText();
-            Admin admin = new Admin();
-            if (rolAsignado.equals("aprendiz")) {
-                Integer nFichaConvertido = convertirNumero(txtDigitado);
-                admin.crearUsuarioAprendiz(tipo, numeroIdConvertido, nombres, apellidos, email, password, nFichaConvertido);
-            } else if (rolAsignado.equals("funcionario")) {
-                admin.crearUsuarioFuncionario(tipo, numeroIdConvertido, nombres, apellidos, email, password, txtDigitado);
 
+            if (rolAsignado.equals("aprendiz")) {
+                Integer nFichaConvertido = convertirNumero(inpNumeroFicha.getText());
+                admin.crearUsuarioAprendiz(tipo,numeroId, nombres, apellidos, email, password, nFichaConvertido);
+            } else if (rolAsignado.equals("funcionario")) {
+                admin.crearUsuarioFuncionario(tipo, numeroId, nombres, apellidos, email, password,cargo.getSelectedItem().toString());
             }
-            //Limpiar variables
+            //Limpieza variables
             tipoId.setSelectedIndex(0);
-            numeroId.setText("");
-            nombre.setText("");
-            apellido.setText("");
-            correo_electronico.setText("");
+            inpNumeroId.setText("");
+            inpNombre.setText("");
+            inpApellido.setText("");
+            inpCorreoElectronico.setText("");
             rol.setSelectedIndex(0);
-            txt.setText("");
+            inpNumeroFicha.setText("");
+            cargo.setSelectedIndex(0);
         });
         cancel.addActionListener(event -> {
             CrearUsuario.dispose();
@@ -526,10 +547,8 @@ public class Main {
     private void buscarUsuario(String panel) {
         //Labels
         JLabel titulo;
-        JLabel lblTipo;
         JLabel lblNumero;
         //Inputs
-        JComboBox<String> tipoId;
         JTextField n_documento;
         //Botones
         JButton btnBuscar;
@@ -538,38 +557,38 @@ public class Main {
         //Configuracion Ventana
         JFrame BuscarUsuario = new JFrame();
         BuscarUsuario.setTitle("Buscar Usuario");
-        BuscarUsuario.setSize(350, 300);
+        BuscarUsuario.setSize(400, 250);
         BuscarUsuario.setLocationRelativeTo(null);
         BuscarUsuario.setLayout(null);
         BuscarUsuario.setResizable(false);
-        BuscarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        BuscarUsuario.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         //Titulo
         titulo = new JLabel("Buscar Usuario");
         titulo.setForeground(azulclaro);
-        titulo.setFont(new Font("Serif", Font.BOLD, 24));
-        titulo.setBounds(80, 20, 400, 30);
+        titulo.setFont(new Font("Serif", Font.PLAIN, 24));
+        titulo.setBounds(20, 20, 400, 30);
         BuscarUsuario.add(titulo);
 
         //Numero
         lblNumero = new JLabel("Numero de identificacion");
-        lblNumero.setBounds(80, 60, 200, 40);
+        lblNumero.setBounds(20, 80, 200, 40);
         BuscarUsuario.add(lblNumero);
 
         n_documento = new JTextField();
-        n_documento.setBounds(80, 100, 150, 30);
+        n_documento.setBounds(180, 80, 150, 30);
         BuscarUsuario.add(n_documento);
 
         //Boton Cancelar
         btnCancelar = new JButton("CANCELAR");
         btnCancelar.setBackground(Color.white);
-        btnCancelar.setBounds(80, 180, 100, 30);
+        btnCancelar.setBounds(100, 140, 100, 30);
         BuscarUsuario.add(btnCancelar);
 
         //Boton buscar
         btnBuscar = new JButton("BUSCAR");
         btnBuscar.setBackground(azulclaro);
         btnBuscar.setForeground(Color.WHITE);
-        btnBuscar.setBounds(200, 180, 100, 30);
+        btnBuscar.setBounds(230, 140, 100, 30);
         BuscarUsuario.add(btnBuscar);
 
         btnCancelar.addActionListener(event -> {
@@ -590,7 +609,7 @@ public class Main {
                         BuscarUsuario.dispose();
                         break;
                 }
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(null, "Usuario no encontrado");
             }
             n_documento.setText("");
@@ -626,7 +645,7 @@ public class Main {
         ActualizarUsuario.setLocationRelativeTo(null);
         ActualizarUsuario.setLayout(null);
         ActualizarUsuario.setResizable(false);
-        ActualizarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ActualizarUsuario.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Titulo
         titulo = new JLabel("Modificar Usuario");
@@ -683,11 +702,12 @@ public class Main {
         ActualizarUsuario.add(lblRol);
 
         infRol = new JLabel();
+        infRol.setForeground(Color.GRAY);
         infRol.setBounds(100, 160, 100, 30);
         ActualizarUsuario.add(infRol);
 
         //Info
-        lblInfo = new JLabel("Ficha:");
+        lblInfo = new JLabel();
         lblInfo.setBounds(260, 160, 80, 30);
         ActualizarUsuario.add(lblInfo);
 
@@ -734,7 +754,7 @@ public class Main {
             String apellidos = infApellido.getText();
             if (infRol.getText().equals("aprendiz")) {
                 Integer ficha = convertirNumero(info.getText());
-                admin.modificarUsuarioAprendiz(tipo, n_documento, nombres, apellidos, emailDg,ficha);
+                admin.modificarUsuarioAprendiz(tipo, n_documento, nombres, apellidos, emailDg, ficha);
             } else if (infRol.getText().equals("funcionario")) {
                 String cargo = info.getText();
                 admin.modificarUsuarioFuncionario(tipo, n_documento, nombres, apellidos, emailDg, cargo);
@@ -770,7 +790,7 @@ public class Main {
         EliminarUsuario.setLocationRelativeTo(null);
         EliminarUsuario.setLayout(null);
         EliminarUsuario.setResizable(false);
-        EliminarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        EliminarUsuario.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Titulo
         titulo = new JLabel("Eliminar Usuario");
@@ -866,7 +886,7 @@ public class Main {
         EliminarUsuario.setVisible(true);
     }
 
-    private void mostrarUsuarios() {
+    private void panelMostrarUsuarios() {
         //labels
         JLabel titulo;
         //Botones
@@ -892,8 +912,8 @@ public class Main {
 
         //Titulo
         titulo = new JLabel("Mostrar Usuarios");
-        titulo.setFont(new Font("Serif", Font.BOLD, 24));
-        titulo.setBounds(100, 40, 400, 100);
+        titulo.setFont(new Font("Serif", Font.PLAIN, 24));
+        titulo.setBounds(100, 60, 400, 30);
         MostrarUsuarios.add(titulo);
 
         //Boton funcionarios
@@ -908,13 +928,15 @@ public class Main {
         btnAprendices.setBounds(100, 180, 150, 40);
         MostrarUsuarios.add(btnAprendices);
         btnReturn.addActionListener(event -> {
-            MostrarUsuarios.setVisible(false);
             MostrarUsuarios.dispose();
+            panelUsuarios();
         });
         btnFuncionarios.addActionListener(event -> {
+            MostrarUsuarios.dispose();
             mostrarFuncionarios();
         });
         btnAprendices.addActionListener(event -> {
+            MostrarUsuarios.dispose();
             mostrarAprendices();
         });
         MostrarUsuarios.setVisible(true);
@@ -926,16 +948,17 @@ public class Main {
         MostrarAprendices.setSize(1000, 500);
         MostrarAprendices.setLocationRelativeTo(null);
         MostrarAprendices.setResizable(false);
-        MostrarAprendices.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        MostrarAprendices.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Admin admin = new Admin();
 
         //Boton volver
-        JButton btnReturn=new JButton("<- Volver");
+        JButton btnReturn = new JButton("<- Volver");
         btnReturn.setBackground(Color.RED);
         btnReturn.setForeground(Color.WHITE);
-        MostrarAprendices.add(btnReturn,BorderLayout.PAGE_END);
+        MostrarAprendices.add(btnReturn, BorderLayout.PAGE_END);
         btnReturn.addActionListener(event -> {
-           MostrarAprendices.dispose();
+            MostrarAprendices.dispose();
+            panelMostrarUsuarios();
         });
 
         //Tabla
@@ -973,16 +996,17 @@ public class Main {
         MostrarFuncionarios.setSize(1000, 500);
         MostrarFuncionarios.setLocationRelativeTo(null);
         MostrarFuncionarios.setResizable(false);
-        MostrarFuncionarios.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        MostrarFuncionarios.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Admin admin = new Admin();
 
         //Boton volver
-        JButton btnReturn=new JButton("<- Volver");
+        JButton btnReturn = new JButton("<- Volver");
         btnReturn.setBackground(Color.RED);
         btnReturn.setForeground(Color.WHITE);
-        MostrarFuncionarios.add(btnReturn,BorderLayout.PAGE_END);
+        MostrarFuncionarios.add(btnReturn, BorderLayout.PAGE_END);
         btnReturn.addActionListener(event -> {
             MostrarFuncionarios.dispose();
+            panelMostrarUsuarios();
         });
 
         //Tabla
@@ -1013,6 +1037,7 @@ public class Main {
             MostrarFuncionarios.setVisible(false);
         }
     }
+
     private void mostrarUsuario() {
         //Labels
         JLabel titulo;
@@ -1041,7 +1066,7 @@ public class Main {
         MostrarUsuario.setLocationRelativeTo(null);
         MostrarUsuario.setLayout(null);
         MostrarUsuario.setResizable(false);
-        MostrarUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        MostrarUsuario.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Boton volver
         btnReturn = new JButton("Volver");
@@ -1124,6 +1149,7 @@ public class Main {
 
         btnReturn.addActionListener(event -> {
             MostrarUsuario.dispose();
+            panelUsuarios();
         });
         btnBuscar.addActionListener(event -> {
             Integer numero = convertirNumero(numeroDigitado.getText());

@@ -32,6 +32,7 @@ public class Admin {
                 ps3.setInt(2,ficha);
                 ps3.executeUpdate();
             }
+            JOptionPane.showMessageDialog(null, "Usuario con numero de documento:" + n_documento + " .Creado exitosamente");
         } catch(SQLException e){
             JOptionPane.showMessageDialog(null,e.getMessage());
             e.printStackTrace();
@@ -62,8 +63,9 @@ public class Admin {
                 ps3.setString(2,cargo);
                 ps3.executeUpdate();
             }
+            JOptionPane.showMessageDialog(null, "Usuario con numero de documento:" + n_documento + " .Creado exitosamente");
         } catch(SQLException ex){
-            System.out.println("Error al insetar el registro");
+            System.out.println("Error al insertar el registro");
             ex.printStackTrace();
         }
     }
@@ -240,6 +242,7 @@ public class Admin {
                 ps1.setInt(1,n_documento);
                 ps1.executeUpdate();
             }
+            JOptionPane.showMessageDialog(null, "Usuario con numero de documento: "+n_documento+" .Eliminado con exito");
         }catch (SQLException e){
             System.out.println("Error al eliminar el usuario"+ e.getMessage());
         }
