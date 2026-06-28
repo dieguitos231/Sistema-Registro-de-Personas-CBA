@@ -33,7 +33,7 @@ public class Admin {
                 ps3.executeUpdate();
             }
         } catch(SQLException e){
-            System.out.println("Error al insetar el registro"+e.getMessage());
+            JOptionPane.showMessageDialog(null,e.getMessage());
             e.printStackTrace();
         }
     }
@@ -167,8 +167,8 @@ public class Admin {
             System.out.println("Error: " + e.getMessage());
         }return listaUsuario;
     }
-    public void modificarUsuarioAprendiz(String tipo_documento, int n_documento, String nombres, String apellidos, String correo_electronico, String rol, int ficha) {
-        String query1 = "UPDATE usuario SET correo_electronico = ?, rol = ? WHERE n_documento = ?";
+    public void modificarUsuarioAprendiz(String tipo_documento, int n_documento, String nombres, String apellidos, String correo_electronico, int ficha) {
+        String query1 = "UPDATE usuario SET correo_electronico = ? WHERE n_documento = ?";
         String query2 = "UPDATE detalle_usuario SET tipo_documento = ?, nombres = ?, apellidos = ? WHERE n_documento = ?";
         String query3 = "UPDATE aprendiz SET ficha = ? WHERE n_documento = ?";
 
@@ -179,8 +179,7 @@ public class Admin {
                  PreparedStatement ps3 = con.prepareStatement(query3)) {
 
                 ps1.setString(1, correo_electronico);
-                ps1.setString(2, rol);
-                ps1.setInt(3, n_documento);
+                ps1.setInt(2, n_documento);
                 ps1.executeUpdate();
 
                 ps2.setString(1,tipo_documento);
@@ -201,8 +200,8 @@ public class Admin {
             ex.printStackTrace();
         }
     }
-    public void modificarUsuarioFuncionario(String tipo_documento,int n_documento, String nombres, String apellidos, String correo_electronico, String rol, String cargo) {
-        String query1 = "UPDATE usuario SET correo_electronico = ?, rol = ? WHERE n_documento = ?";
+    public void modificarUsuarioFuncionario(String tipo_documento,int n_documento, String nombres, String apellidos, String correo_electronico, String cargo) {
+        String query1 = "UPDATE usuario SET correo_electronico = ? WHERE n_documento = ?";
         String query2 = "UPDATE detalle_usuario SET tipo_documento = ?,nombres = ?, apellidos = ? WHERE n_documento = ?";
         String query3 = "UPDATE funcionario SET cargo = ? WHERE n_documento = ?";
 
@@ -213,9 +212,9 @@ public class Admin {
                  PreparedStatement ps3 = con.prepareStatement(query3)) {
 
                 ps1.setString(1, correo_electronico);
-                ps1.setString(2, rol);
-                ps1.setInt(3, n_documento);
+                ps1.setInt(2, n_documento);
                 ps1.executeUpdate();
+
                 ps2.setString(1,tipo_documento);
                 ps2.setString(2, nombres);
                 ps2.setString(3, apellidos);

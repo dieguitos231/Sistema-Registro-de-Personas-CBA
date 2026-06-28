@@ -43,7 +43,7 @@ public class Usuario {
             System.out.println("Error al actualizar los datos: " + e.getMessage());
         }
     }
-    public void actulizarIngreso(int n_documento){
+    public void actualizarIngreso(int n_documento){
         String consulta = "UPDATE usuario set primer_ingreso=false WHERE n_documento=?";
         try(Connection con = ConexionDB.getConnection();){
             try(PreparedStatement ps1 = con.prepareStatement(consulta)){
@@ -51,6 +51,7 @@ public class Usuario {
                 ps1.executeUpdate();
             }
         }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
             System.out.println("Error al actualizar los datos: " + e.getMessage());
         }
     }
