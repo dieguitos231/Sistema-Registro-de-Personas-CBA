@@ -1,6 +1,8 @@
 package com.sena;
 
 import javax.swing.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Connection;
@@ -11,8 +13,9 @@ import java.sql.SQLException;
 public class Admin {
     public void crearUsuarioAprendiz(String tipo_documento,int n_documento,String nombres,String apellidos, String correo_electronico, String password, int ficha){
         String query1 = "INSERT INTO usuario(n_documento,correo_electronico,password,rol) VALUES(?,?,crypt(?,gen_salt('bf')),'aprendiz')";
-        String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?)";
+        String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?) RETURNING fecha_creacion";
         String query3 = "INSERT INTO aprendiz(n_documento,ficha) VALUES(?,?)";
+
         try(Connection con = ConexionDB.getConnection();){
             try(PreparedStatement ps1 = con.prepareStatement(query1)){
                 ps1.setInt(1,n_documento);
@@ -20,18 +23,27 @@ public class Admin {
                 ps1.setString(3,password);
                 ps1.executeUpdate();
             }
+
+            LocalDate fechaCreacion = null;
+
             try(PreparedStatement ps2 = con.prepareStatement(query2)){
                 ps2.setString(1,tipo_documento);
                 ps2.setInt(2,n_documento);
                 ps2.setString(3,nombres);
                 ps2.setString(4,apellidos);
-                ps2.executeUpdate();
+                ResultSet rs = ps2.executeQuery();
+                if(rs.next()){
+                    fechaCreacion = rs.getTimestamp("fecha_creacion")
+                                      .toLocalDateTime()
+                                      .toLocalDate();
+                }
             }
             try(PreparedStatement ps3 = con.prepareStatement(query3)){
                 ps3.setInt(1,n_documento);
                 ps3.setInt(2,ficha);
                 ps3.executeUpdate();
             }
+            generarTarjeta(n_documento,nombres,apellidos,fechaCreacion);
             JOptionPane.showMessageDialog(null, "Usuario con numero de documento:" + n_documento + " .Creado exitosamente");
         } catch(SQLException e){
             JOptionPane.showMessageDialog(null,e.getMessage());
@@ -247,6 +259,23 @@ public class Admin {
             System.out.println("Error al eliminar el usuario"+ e.getMessage());
         }
     }
-    public void generarTarjeta(){
+    public void generarTarjeta(int ndocumento, String nombres, String apellidos, LocalDate fechaCreacion){
+        char primeraLetraNombre = Character.toUpperCase(nombres.trim().charAt(0));
+        char primeraLetraApellido = Character.toUpperCase(apellidos.trim().charAt(0));
+
+        String fecha = fechaCreacion.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        String codigoTarjerta = "" + primeraLetraNombre + primeraLetraApellido + ndocumento + fecha;
+
+        String query = "INSERT INTO tarjeta_usuario (n_documento, codigo_tarjeta, estado) VALUES(?,?,true)";
+        try(Connection con = ConexionDB.getConnection()){
+            try(PreparedStatement ps1 = con.prepareStatement(query)){
+                ps1.setInt(1,ndocumento);
+                ps1.setString(2, codigoTarjerta);
+                ps1.executeUpdate();
+            }
+        }catch (SQLException e){
+            System.out.println("Error al insertar los datos en la tabla tarjeta_usuario" + e.getMessage());
+        }
     }
 }
