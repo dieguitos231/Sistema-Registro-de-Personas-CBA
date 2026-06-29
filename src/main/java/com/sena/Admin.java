@@ -15,6 +15,14 @@ public class Admin {
         String query1 = "INSERT INTO usuario(n_documento,correo_electronico,password,rol) VALUES(?,?,crypt(?,gen_salt('bf')),'aprendiz')";
         String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?) RETURNING fecha_creacion";
         String query3 = "INSERT INTO aprendiz(n_documento,ficha) VALUES(?,?)";
+        if (correo_electronico == null || correo_electronico.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "El correo electrónico no puede estar vacío.");
+            return;
+        }
+        if (!correo_electronico.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            JOptionPane.showMessageDialog(null, "El correo electrónico no es válido. Debe contener '@' y un dominio (ejemplo: usuario@correo.com)");
+            return;
+        }
 
         try(Connection con = ConexionDB.getConnection();){
             try(PreparedStatement ps1 = con.prepareStatement(query1)){
@@ -52,7 +60,7 @@ public class Admin {
     }
     public void crearUsuarioFuncionario(String tipo_documento,int n_documento,String nombres,String apellidos, String correo_electronico, String password, String cargo){
         String query1 = "INSERT INTO usuario(n_documento,correo_electronico,password,rol) VALUES(?,?,crypt(?,gen_salt('bf')),'funcionario')";
-        String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?)";
+        String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?) RETURNING fecha_creacion";
         String query3 = "INSERT INTO funcionario(n_documento,cargo) VALUES(?,?)";
 
         try(Connection con = ConexionDB.getConnection();){
@@ -63,18 +71,27 @@ public class Admin {
                 ps1.executeUpdate();
 
             }
+
+            LocalDate fechaCreacion = null;
+
             try(PreparedStatement ps2 = con.prepareStatement(query2)){
                 ps2.setString(1,tipo_documento);
                 ps2.setInt(2,n_documento);
                 ps2.setString(3,nombres);
                 ps2.setString(4,apellidos);
-                ps2.executeUpdate();
+                ResultSet rs = ps2.executeQuery();
+                if(rs.next()){
+                    fechaCreacion = rs.getTimestamp("fecha_creacion")
+                                      .toLocalDateTime()
+                                      .toLocalDate();
+                }
             }
             try(PreparedStatement ps3 = con.prepareStatement(query3)){
                 ps3.setInt(1,n_documento);
                 ps3.setString(2,cargo);
                 ps3.executeUpdate();
             }
+            generarTarjeta(n_documento,nombres,apellidos,fechaCreacion);
             JOptionPane.showMessageDialog(null, "Usuario con numero de documento:" + n_documento + " .Creado exitosamente");
         } catch(SQLException ex){
             System.out.println("Error al insertar el registro");
@@ -267,7 +284,7 @@ public class Admin {
 
         String codigoTarjerta = "" + primeraLetraNombre + primeraLetraApellido + ndocumento + fecha;
 
-        String query = "INSERT INTO tarjeta_usuario (n_documento, codigo_tarjeta, estado) VALUES(?,?,true)";
+        String query = "INSERT INTO tarjeta_usuario (n_documento, codigo_tarjeta) VALUES(?,?)";
         try(Connection con = ConexionDB.getConnection()){
             try(PreparedStatement ps1 = con.prepareStatement(query)){
                 ps1.setInt(1,ndocumento);
