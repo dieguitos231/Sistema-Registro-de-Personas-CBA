@@ -119,7 +119,7 @@ public class Main {
                             Login.setVisible(false);
                         }
                         case "funcionario" -> {
-                            // panelFuncionario();
+                            panelUsuario();
                             Login.setVisible(false);
                         }
                     }
@@ -309,7 +309,7 @@ public class Main {
                         panelUsuario();
                     }
                     case "funcionario" ->{
-                        //panelFuncionario();
+                        panelUsuario();
                     }
                 }
             }
