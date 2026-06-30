@@ -240,7 +240,7 @@ public class Main {
 
         btnReturn.addActionListener(event -> PanelUsuarios.dispose());
         btnGestionUsuario.addActionListener(event -> {
-            gestionUsuarios();
+            panelGestionUsuarios();
             PanelUsuarios.dispose();
         });
         btnMostrarUsuario.addActionListener(event -> {
@@ -248,7 +248,7 @@ public class Main {
             PanelUsuarios.dispose();
         });
         btnBuscarUsuario.addActionListener(event -> {
-            mostrarUsuario();
+            buscarInfoUsuario();
             PanelUsuarios.dispose();
         });
         PanelUsuarios.setVisible(true);
@@ -326,7 +326,7 @@ public class Main {
         }
     }
 
-    private void gestionUsuarios() {
+    private void panelGestionUsuarios() {
         //labels
         JLabel titulo;
         //Botones
@@ -383,18 +383,19 @@ public class Main {
             panelUsuarios();
         });
         btnCreateUser.addActionListener(event -> {
-            crearUsuario();
+            panelCrearUsuario();
+
         });
         btnUpdateUser.addActionListener(event -> {
-            buscarUsuario("actualizar");
+            panelBuscarUsuario("actualizar");
         });
         btnDeleteUser.addActionListener(event -> {
-            buscarUsuario("eliminar");
+            panelBuscarUsuario("eliminar");
         });
         GestionUsuarios.setVisible(true);
     }
 
-    private void crearUsuario() {
+    private void panelCrearUsuario() {
         //Labels
         JLabel titulo;
         JLabel lblNumeroId;
@@ -416,7 +417,7 @@ public class Main {
         //Configuracion Ventana
         JFrame CrearUsuario = new JFrame();
         CrearUsuario.setTitle("Crear usuario");
-        CrearUsuario.setSize(500, 400);
+        CrearUsuario.setSize(520, 400);
         CrearUsuario.setLocationRelativeTo(null);
         CrearUsuario.setLayout(null);
         CrearUsuario.setResizable(false);
@@ -501,7 +502,8 @@ public class Main {
 
         //numero ficha o cargo
         JTextField inpNumeroFicha = new JTextField();
-        inpNumeroFicha.setBounds(340, 250, 100, 30);
+        inpNumeroFicha.setBounds(340, 250, 120, 30);
+        inpNumeroFicha.setVisible(false);
         CrearUsuario.add(inpNumeroFicha);
 
         String[] opcionesCargos={
@@ -512,7 +514,9 @@ public class Main {
           "Servicios generales"
         };
         JComboBox<String> cargo =new JComboBox<>(opcionesCargos);
-        cargo.setBounds(340, 250, 100, 30);
+        cargo.setBackground(Color.WHITE);
+        cargo.setVisible(false);
+        cargo.setBounds(340, 250, 155, 30);
         CrearUsuario.add(cargo);
 
         rol.addActionListener(event -> {
@@ -573,7 +577,7 @@ public class Main {
         CrearUsuario.setVisible(true);
     }
 
-    private void buscarUsuario(String panel) {
+    private void panelBuscarUsuario(String panel) {
         //Labels
         JLabel titulo;
         JLabel lblNumero;
@@ -630,11 +634,11 @@ public class Main {
             if (lista.size() > 0) {
                 switch (panel) {
                     case "actualizar":
-                        actualizarInfoUsuario(numero, lista);
+                        panelActualizarInfo(numero, lista);
                         BuscarUsuario.dispose();
                         break;
                     case "eliminar":
-                        eliminarUsuario(numero, lista);
+                        panelEliminarUsuario(numero, lista);
                         BuscarUsuario.dispose();
                         break;
                 }
@@ -646,7 +650,7 @@ public class Main {
         BuscarUsuario.setVisible(true);
     }
 
-    private void actualizarInfoUsuario(int n_documento, List<Object[]> lista) {
+    private void panelActualizarInfo(int n_documento, List<Object[]> lista) {
         //Labels
         JLabel titulo;
         JLabel lblTituloId;
@@ -662,7 +666,6 @@ public class Main {
         JTextField infEmail;
         JTextField infNombre;
         JTextField infApellido;
-        JTextField info;
 
         //Buttons
         JButton btnCancel;
@@ -704,7 +707,7 @@ public class Main {
         ActualizarUsuario.add(lblEmail);
 
         infEmail = new JTextField();
-        infEmail.setBounds(320, 80, 100, 30);
+        infEmail.setBounds(300, 80, 150, 30);
         ActualizarUsuario.add(infEmail);
 
         //Nombre
@@ -740,9 +743,23 @@ public class Main {
         lblInfo.setBounds(260, 160, 80, 30);
         ActualizarUsuario.add(lblInfo);
 
-        info = new JTextField();
-        info.setBounds(320, 160, 100, 30);
-        ActualizarUsuario.add(info);
+        JTextField inpNumeroFicha= new JTextField();
+        inpNumeroFicha.setBounds(320, 160, 100, 30);
+        ActualizarUsuario.add(inpNumeroFicha);
+
+        String[] opcionesCargos={
+                "Directivo",
+                "Instructor",
+                "Profesional/Administrativo",
+                "Tecnico/Auxiliar",
+                "Servicios generales"
+        };
+        JComboBox cargo= new JComboBox<>(opcionesCargos);
+        cargo.setBackground(Color.WHITE);
+        cargo.setBounds(320, 160, 155, 30);
+        ActualizarUsuario.add(cargo);
+
+
 
         //Boton cancelar
         btnCancel = new JButton("Cancelar");
@@ -764,10 +781,12 @@ public class Main {
             infRol.setText(elemento[4].toString());
             if (elemento[4].equals("aprendiz")) {
                 lblInfo.setText("Ficha: ");
-                info.setText(elemento[5].toString());
+                cargo.setVisible(false);
+                inpNumeroFicha.setText(elemento[5].toString());
             } else if (elemento[4].equals("funcionario")) {
                 lblInfo.setText("Cargo: ");
-                info.setText(elemento[5].toString());
+                inpNumeroFicha.setVisible(false);
+                cargo.setSelectedItem(elemento[5].toString());
             }
         }
         ;
@@ -782,18 +801,18 @@ public class Main {
             String nombres = infNombre.getText();
             String apellidos = infApellido.getText();
             if (infRol.getText().equals("aprendiz")) {
-                Integer ficha = convertirNumero(info.getText());
+                Integer ficha = convertirNumero(inpNumeroFicha.getText());
                 admin.modificarUsuarioAprendiz(tipo, n_documento, nombres, apellidos, emailDg, ficha);
             } else if (infRol.getText().equals("funcionario")) {
-                String cargo = info.getText();
-                admin.modificarUsuarioFuncionario(tipo, n_documento, nombres, apellidos, emailDg, cargo);
+                String cargoSelect = cargo.getSelectedItem().toString();
+                admin.modificarUsuarioFuncionario(tipo, n_documento, nombres, apellidos, emailDg, cargoSelect);
             }
             ActualizarUsuario.dispose();
         });
         ActualizarUsuario.setVisible(true);
     }
 
-    private void eliminarUsuario(int n_documento, List<Object[]> lista) {
+    private void panelEliminarUsuario(int n_documento, List<Object[]> lista) {
         //Inputs
         JLabel titulo;
         JLabel lblTituloId;
@@ -962,16 +981,16 @@ public class Main {
         });
         btnFuncionarios.addActionListener(event -> {
             MostrarUsuarios.dispose();
-            mostrarFuncionarios();
+            panelMostrarFuncionarios();
         });
         btnAprendices.addActionListener(event -> {
             MostrarUsuarios.dispose();
-            mostrarAprendices();
+            panelMostrarAprendices();
         });
         MostrarUsuarios.setVisible(true);
     }
 
-    private void mostrarAprendices() {
+    private void panelMostrarAprendices() {
         JFrame MostrarAprendices = new JFrame();
         MostrarAprendices.setTitle("Mostrar Aprendices");
         MostrarAprendices.setSize(1000, 500);
@@ -1019,7 +1038,7 @@ public class Main {
         }
     }
 
-    private void mostrarFuncionarios() {
+    private void panelMostrarFuncionarios() {
         JFrame MostrarFuncionarios = new JFrame();
         MostrarFuncionarios.setTitle("Mostrar Funcionarios");
         MostrarFuncionarios.setSize(1000, 500);
@@ -1067,7 +1086,7 @@ public class Main {
         }
     }
 
-    private void mostrarUsuario() {
+    private void buscarInfoUsuario() {
         //Labels
         JLabel titulo;
         JLabel lblTituloId;
@@ -1280,6 +1299,7 @@ public class Main {
         btnCerrarSesion.setBounds(220,300,150,40);
         PanelUsuario.add(btnCerrarSesion);
 
+        btnCerrarSesion.addActionListener(event-> PanelUsuario.dispose());
 
         PanelUsuario.setVisible(true);
     }

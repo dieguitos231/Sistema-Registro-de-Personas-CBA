@@ -42,8 +42,8 @@ public class Admin {
                 ResultSet rs = ps2.executeQuery();
                 if(rs.next()){
                     fechaCreacion = rs.getTimestamp("fecha_creacion")
-                                      .toLocalDateTime()
-                                      .toLocalDate();
+                            .toLocalDateTime()
+                            .toLocalDate();
                 }
             }
             try(PreparedStatement ps3 = con.prepareStatement(query3)){
@@ -82,8 +82,8 @@ public class Admin {
                 ResultSet rs = ps2.executeQuery();
                 if(rs.next()){
                     fechaCreacion = rs.getTimestamp("fecha_creacion")
-                                      .toLocalDateTime()
-                                      .toLocalDate();
+                            .toLocalDateTime()
+                            .toLocalDate();
                 }
             }
             try(PreparedStatement ps3 = con.prepareStatement(query3)){
@@ -96,6 +96,25 @@ public class Admin {
         } catch(SQLException ex){
             System.out.println("Error al insertar el registro");
             ex.printStackTrace();
+        }
+    }
+    public void generarTarjeta(int ndocumento, String nombres, String apellidos, LocalDate fechaCreacion){
+        char primeraLetraNombre = Character.toUpperCase(nombres.trim().charAt(0));
+        char primeraLetraApellido = Character.toUpperCase(apellidos.trim().charAt(0));
+
+        String fecha = fechaCreacion.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        String codigoTarjerta = "" + primeraLetraNombre + primeraLetraApellido + ndocumento + fecha;
+
+        String query = "INSERT INTO tarjeta_usuario (n_documento, codigo_tarjeta) VALUES(?,?)";
+        try(Connection con = ConexionDB.getConnection()){
+            try(PreparedStatement ps1 = con.prepareStatement(query)){
+                ps1.setInt(1,ndocumento);
+                ps1.setString(2, codigoTarjerta);
+                ps1.executeUpdate();
+            }
+        }catch (SQLException e){
+            System.out.println("Error al insertar los datos en la tabla tarjeta_usuario" + e.getMessage());
         }
     }
     public List<Object[]> mostrarAprendices(){
@@ -164,35 +183,35 @@ public class Admin {
             if(rol.equals("aprendiz")){
                 try(PreparedStatement ps2= con.prepareStatement(query2)){
                     ps2.setInt(1, numero);
-                        ResultSet rs = ps2.executeQuery();
-                        while(rs.next()) {
-                            Object[] arreglo = new Object[7];
-                            arreglo[0] = rs.getString("tipo_documento");
-                            arreglo[1] = rs.getInt("n_documento");
-                            arreglo[2] = rs.getString("nombres");
-                            arreglo[3] = rs.getString("apellidos");
-                            arreglo[4] = rs.getString("rol");
-                            arreglo[5] = rs.getInt("ficha");
-                            arreglo[6] = rs.getString("correo_electronico");
-                            listaUsuario.add(arreglo);
-                        }
+                    ResultSet rs = ps2.executeQuery();
+                    while(rs.next()) {
+                        Object[] arreglo = new Object[7];
+                        arreglo[0] = rs.getString("tipo_documento");
+                        arreglo[1] = rs.getInt("n_documento");
+                        arreglo[2] = rs.getString("nombres");
+                        arreglo[3] = rs.getString("apellidos");
+                        arreglo[4] = rs.getString("rol");
+                        arreglo[5] = rs.getInt("ficha");
+                        arreglo[6] = rs.getString("correo_electronico");
+                        listaUsuario.add(arreglo);
                     }
+                }
             }else if(rol.equals("funcionario")){
-                    try(PreparedStatement ps3= con.prepareStatement(query3)){
-                        ps3.setInt(1, numero);
-                        ResultSet rs = ps3.executeQuery();
-                        while(rs.next()) {
-                            Object[] arreglo = new Object[7];
-                            arreglo[0] = rs.getString("tipo_documento");
-                            arreglo[1] = rs.getInt("n_documento");
-                            arreglo[2] = rs.getString("nombres");
-                            arreglo[3] = rs.getString("apellidos");
-                            arreglo[4] = rs.getString("rol");
-                            arreglo[5] = rs.getString("cargo");
-                            arreglo[6] = rs.getString("correo_electronico");
-                            listaUsuario.add(arreglo);
-                        }
+                try(PreparedStatement ps3= con.prepareStatement(query3)){
+                    ps3.setInt(1, numero);
+                    ResultSet rs = ps3.executeQuery();
+                    while(rs.next()) {
+                        Object[] arreglo = new Object[7];
+                        arreglo[0] = rs.getString("tipo_documento");
+                        arreglo[1] = rs.getInt("n_documento");
+                        arreglo[2] = rs.getString("nombres");
+                        arreglo[3] = rs.getString("apellidos");
+                        arreglo[4] = rs.getString("rol");
+                        arreglo[5] = rs.getString("cargo");
+                        arreglo[6] = rs.getString("correo_electronico");
+                        listaUsuario.add(arreglo);
                     }
+                }
             }
         }catch (SQLException e){
             System.out.println("Error: " + e.getMessage());
@@ -274,25 +293,6 @@ public class Admin {
             JOptionPane.showMessageDialog(null, "Usuario con numero de documento: "+n_documento+" .Eliminado con exito");
         }catch (SQLException e){
             System.out.println("Error al eliminar el usuario"+ e.getMessage());
-        }
-    }
-    public void generarTarjeta(int ndocumento, String nombres, String apellidos, LocalDate fechaCreacion){
-        char primeraLetraNombre = Character.toUpperCase(nombres.trim().charAt(0));
-        char primeraLetraApellido = Character.toUpperCase(apellidos.trim().charAt(0));
-
-        String fecha = fechaCreacion.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-
-        String codigoTarjerta = "" + primeraLetraNombre + primeraLetraApellido + ndocumento + fecha;
-
-        String query = "INSERT INTO tarjeta_usuario (n_documento, codigo_tarjeta) VALUES(?,?)";
-        try(Connection con = ConexionDB.getConnection()){
-            try(PreparedStatement ps1 = con.prepareStatement(query)){
-                ps1.setInt(1,ndocumento);
-                ps1.setString(2, codigoTarjerta);
-                ps1.executeUpdate();
-            }
-        }catch (SQLException e){
-            System.out.println("Error al insertar los datos en la tabla tarjeta_usuario" + e.getMessage());
         }
     }
 }
