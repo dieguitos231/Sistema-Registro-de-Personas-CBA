@@ -31,16 +31,23 @@ public class Usuario {
         }
         return lista;
     }
-    public void  actualizarContrasena(char[] password, int n_documento){
-        String consulta = "UPDATE usuario SET password=crypt(?,password) WHERE n_documento =?";
+    public boolean  actualizarContrasena(char[] password, int n_documento){
+        if (password == null || password.length < 8) {
+            JOptionPane.showMessageDialog(null, "La contraseña debe tener mínimo 8 caracteres.");
+            return false;
+        }
+        String consulta = "UPDATE usuario SET password=crypt(?,gen_salt('bf')) WHERE n_documento =?";
         try(Connection con = ConexionDB.getConnection();){
             try(PreparedStatement ps1 = con.prepareStatement(consulta)){
                 ps1.setString(1, new String(password));
                 ps1.setInt(2, n_documento);
                 ps1.executeUpdate();
+                return true;
             }
         }catch(SQLException e){
             System.out.println("Error al actualizar los datos: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public void actualizarIngreso(int n_documento){

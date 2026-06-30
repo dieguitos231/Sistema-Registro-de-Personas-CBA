@@ -2,13 +2,11 @@ package com.sena;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.print.attribute.standard.JobMessageFromOperator;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
@@ -102,19 +100,32 @@ public class Main {
             char[] txtPassword = textPassword.getPassword();
             Usuario usuario = new Usuario();
             List<Object[]> dato = usuario.iniciarSesion(txtEmail, txtPassword);
+
             for (Object[] data : dato) {
                 Integer n_documento = (Integer) data[0];
                 String rol = (String) data[1];
                 Boolean primerIngreso = (Boolean) data[2];
-                if (rol.equals("administrador") && primerIngreso.equals(false)) {
-                    panelAdmin();
-                    Login.setVisible(false);
-                } else if (rol.equals("administrador") && primerIngreso.equals(true)) {
-                    primerIngreso(n_documento);
-                    usuario.actualizarIngreso(n_documento);
+
+                if (primerIngreso.equals(true)) {
+                    primerIngreso(n_documento, rol);
+                } else {
+                    switch (rol) {
+                        case "administrador" -> {
+                            panelAdmin();
+                            Login.setVisible(false);
+                        }
+                        case "aprendiz" -> {
+                            // panelAprendiz();
+                            Login.setVisible(false);
+                        }
+                        case "funcionario" -> {
+                            // panelFuncionario();
+                            Login.setVisible(false);
+                        }
+                    }
                 }
             }
-            //Vacio de valores al iniciar sesion
+
             textEmail.setText("");
             textPassword.setText("");
         });
@@ -243,7 +254,7 @@ public class Main {
         PanelUsuarios.setVisible(true);
     }
 
-    public void primerIngreso(int n_documento) {
+    public void primerIngreso(int n_documento,String rol) {
         //Label
         JLabel titulo;
         //Input
@@ -279,11 +290,29 @@ public class Main {
         enviar.setBounds(200, 100, 100, 30);
         PrimerIngreso.add(enviar);
 
+        for (ActionListener al : enviar.getActionListeners()) {
+            enviar.removeActionListener(al);
+        }
+
         enviar.addActionListener(event -> {
             char[] passwordDigitada = password.getPassword();
             Usuario usuario = new Usuario();
-            usuario.actualizarContrasena(passwordDigitada, n_documento);
-            panelAdmin();
+            boolean actulizado = usuario.actualizarContrasena(passwordDigitada, n_documento);
+            if(actulizado){
+                usuario.actualizarIngreso(n_documento);
+                PrimerIngreso.setVisible(false);
+                switch (rol){
+                    case "administrador" ->{
+                        panelAdmin();
+                    }
+                    case "aprendiz" ->{
+                        //panelAprendiz();
+                    }
+                    case "funcionario" ->{
+                        //panelFuncionario();
+                    }
+                }
+            }
         });
         PrimerIngreso.setVisible(true);
     }
