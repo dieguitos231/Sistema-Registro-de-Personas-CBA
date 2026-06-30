@@ -12,3 +12,5 @@ TAREAS DIEGO
 Cero validaciones de entrada (Input Validation): Al hacer clic en crear, capturas los textos directamente y los conviertes o los pasas a la base de datos. Si el usuario deja el número de documento vacío o ingresa letras,
 la función que convierte los números probablemente fallará (lanzando un Exception) y la aplicación se cerrará o mostrará errores en consola. Debes validar que ningún campo esté vacío y que los formatos sean correctos antes  
 de procesar la petición.   
+
+[]EN MODIFICAR USUARIO ME FALTA AGREGAR EL CAMPO DE CARGO PARA QUE QUEDE CORRECTO

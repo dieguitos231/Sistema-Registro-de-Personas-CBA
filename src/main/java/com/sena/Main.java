@@ -115,7 +115,7 @@ public class Main {
                             Login.setVisible(false);
                         }
                         case "aprendiz" -> {
-                            // panelAprendiz();
+                            panelUsuario();
                             Login.setVisible(false);
                         }
                         case "funcionario" -> {
@@ -306,7 +306,7 @@ public class Main {
                         panelAdmin();
                     }
                     case "aprendiz" ->{
-                        //panelAprendiz();
+                        panelUsuario();
                     }
                     case "funcionario" ->{
                         //panelFuncionario();
@@ -1203,5 +1203,84 @@ public class Main {
         });
 
         MostrarUsuario.setVisible(true);
+    }
+    private void panelUsuario() {
+
+        JFrame PanelUsuario = new JFrame();
+
+        PanelUsuario.setTitle("Panel Usuario");
+        PanelUsuario.setSize(600, 400);
+        PanelUsuario.setLocationRelativeTo(null);
+        PanelUsuario.setLayout(null);
+        PanelUsuario.setResizable(false);
+        PanelUsuario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JLabel titulo=new JLabel("Tarjeta");
+        titulo.setFont(new Font("Serif",Font.PLAIN,20));
+        titulo.setBounds(40,20,200,40);
+        PanelUsuario.add(titulo);
+
+        //Tarjeta
+        JPanel tarjeta = new JPanel();
+
+        tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
+
+        tarjeta.setBorder(
+                BorderFactory.createLineBorder(Color.white,1)
+        );
+
+
+        String nombre = "Diego";
+
+
+        JLabel lblNombre = new JLabel("Nombre: " + nombre);
+        lblNombre.setForeground(Color.WHITE);
+
+        JLabel lblIdentificacion = new JLabel("T.I: 123456789");
+        lblIdentificacion.setForeground(Color.WHITE);
+        JLabel lblRol = new JLabel("Rol: Administrador");
+        lblRol.setForeground(Color.WHITE);
+        JLabel lblCargo = new JLabel("Cargo: Desarrollo");
+        lblCargo.setForeground(Color.WHITE);
+        JLabel lblEmision = new JLabel("Fecha Emisión: 29/06/2026");
+        lblEmision.setForeground(Color.WHITE);
+        JLabel lblExpiracion = new JLabel("Fecha Expiración: 29/06/2030");
+        lblExpiracion.setForeground(Color.WHITE);
+        JLabel lblEstado = new JLabel("Estado: Activo");
+        lblEstado.setForeground(Color.WHITE);
+        JLabel idTarjeta = new JLabel("DFG1031807049");
+        idTarjeta.setForeground(Color.WHITE);
+
+
+        // Espacio entre campos
+        lblNombre.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        lblIdentificacion.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        lblRol.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        lblCargo.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        lblEmision.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        lblExpiracion.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        lblEstado.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        idTarjeta.setBorder(BorderFactory.createEmptyBorder(5,200,5,50));
+
+        tarjeta.add(lblNombre);
+        tarjeta.add(lblIdentificacion);
+        tarjeta.add(lblRol);
+        tarjeta.add(lblCargo);
+        tarjeta.add(lblEmision);
+        tarjeta.add(lblExpiracion);
+        tarjeta.add(lblEstado);
+        tarjeta.add(idTarjeta);
+
+        tarjeta.setBounds(40,60,500,220);
+        Color colorSena = new Color(57, 169, 0);
+        tarjeta.setBackground(colorSena);
+        PanelUsuario.add(tarjeta);
+
+        JButton btnCerrarSesion = new JButton("Cerrar Sesion");
+        btnCerrarSesion.setBackground(Color.RED);
+        btnCerrarSesion.setBounds(220,300,150,40);
+        PanelUsuario.add(btnCerrarSesion);
+
+
+        PanelUsuario.setVisible(true);
     }
 }
