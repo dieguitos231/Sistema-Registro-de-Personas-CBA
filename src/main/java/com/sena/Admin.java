@@ -11,6 +11,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Admin {
+    private Boolean convertirABoolean(Object valor) {
+        if (valor == null) return null;
+        if (valor instanceof Boolean) return (Boolean) valor;
+        if (valor instanceof String) {
+            String texto = ((String) valor).trim().toLowerCase();
+            return texto.equals("true") || texto.equals("t") || texto.equals("1");
+        }
+        if (valor instanceof Number) return ((Number) valor).intValue() != 0;
+        return null;
+    }
     public void crearUsuarioAprendiz(String tipo_documento,int n_documento,String nombres,String apellidos, String correo_electronico, String password, int ficha){
         String query1 = "INSERT INTO usuario(n_documento,correo_electronico,password,rol) VALUES(?,?,crypt(?,gen_salt('bf')),'aprendiz')";
         String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?) RETURNING fecha_creacion";
@@ -216,6 +226,65 @@ public class Admin {
         }catch (SQLException e){
             System.out.println("Error: " + e.getMessage());
         }return listaUsuario;
+    }
+    public List<Object[]> mostrarUsuarioTarjeta(int numero){
+        List<Object[]> listaUsuario = new ArrayList<>();
+        String rol = "";
+        String query1 = "SELECT rol FROM usuario WHERE n_documento = ?;";
+        String query2 = "SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres,detalle_usuario.apellidos, usuario.rol, aprendiz.ficha, tarjeta_usuario.fecha_emision, tarjeta_usuario.fecha_expiracion,tarjeta_usuario.estado, tarjeta_usuario.codigo_tarjeta FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento INNER JOIN aprendiz ON usuario.n_documento = aprendiz.n_documento LEFT JOIN tarjeta_usuario ON usuario.n_documento = tarjeta_usuario.n_documento WHERE usuario.n_documento = ?";
+        String query3 = "SELECT detalle_usuario.tipo_documento, usuario.n_documento, detalle_usuario.nombres,detalle_usuario.apellidos, usuario.rol, funcionario.cargo,tarjeta_usuario.fecha_emision, tarjeta_usuario.fecha_expiracion,tarjeta_usuario.estado, tarjeta_usuario.codigo_tarjeta FROM usuario INNER JOIN detalle_usuario ON usuario.n_documento = detalle_usuario.n_documento INNER JOIN funcionario ON usuario.n_documento = funcionario.n_documento LEFT JOIN tarjeta_usuario ON usuario.n_documento = tarjeta_usuario.n_documento WHERE usuario.n_documento = ?";
+
+        try (Connection con = ConexionDB.getConnection()) {
+            try (PreparedStatement ps1 = con.prepareStatement(query1)) {
+                ps1.setInt(1, numero);
+                ResultSet rs = ps1.executeQuery();
+                if (rs.next()) {
+                    rol = rs.getString("rol");
+                }
+            }
+
+            if (rol.equals("aprendiz")) {
+                try (PreparedStatement ps2 = con.prepareStatement(query2)) {
+                    ps2.setInt(1, numero);
+                    ResultSet rs = ps2.executeQuery();
+                    while (rs.next()) {
+                        Object[] arreglo = new Object[10];
+                        arreglo[0] = rs.getString("tipo_documento");
+                        arreglo[1] = rs.getInt("n_documento");
+                        arreglo[2] = rs.getString("nombres");
+                        arreglo[3] = rs.getString("apellidos");
+                        arreglo[4] = rs.getString("rol");
+                        arreglo[5] = rs.getInt("ficha");
+                        arreglo[6] = rs.getDate("fecha_emision");
+                        arreglo[7] = rs.getDate("fecha_expiracion");
+                        arreglo[8] = convertirABoolean(rs.getObject("estado"));                        arreglo[9] = rs.getString("codigo_tarjeta");
+                        listaUsuario.add(arreglo);
+                    }
+                }
+            } else if (rol.equals("funcionario")) {
+                try (PreparedStatement ps3 = con.prepareStatement(query3)) {
+                    ps3.setInt(1, numero);
+                    ResultSet rs = ps3.executeQuery();
+                    while (rs.next()) {
+                        Object[] arreglo = new Object[10];
+                        arreglo[0] = rs.getString("tipo_documento");
+                        arreglo[1] = rs.getInt("n_documento");
+                        arreglo[2] = rs.getString("nombres");
+                        arreglo[3] = rs.getString("apellidos");
+                        arreglo[4] = rs.getString("rol");
+                        arreglo[5] = rs.getString("cargo");
+                        arreglo[6] = rs.getDate("fecha_emision");
+                        arreglo[7] = rs.getDate("fecha_expiracion");
+                        arreglo[8] = (Boolean) rs.getObject("estado");
+                        arreglo[9] = rs.getString("codigo_tarjeta");
+                        listaUsuario.add(arreglo);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return listaUsuario;
     }
     public void modificarUsuarioAprendiz(String tipo_documento, int n_documento, String nombres, String apellidos, String correo_electronico, int ficha) {
         String query1 = "UPDATE usuario SET correo_electronico = ? WHERE n_documento = ?";

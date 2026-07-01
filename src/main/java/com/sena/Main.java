@@ -25,6 +25,7 @@ public class Main {
                 e.printStackTrace();
             }
         });
+
     }
 
     public Main() {
@@ -1302,5 +1303,31 @@ public class Main {
         btnCerrarSesion.addActionListener(event-> PanelUsuario.dispose());
 
         PanelUsuario.setVisible(true);
+
+        //ELiminar apartir de aqui
+
+        Admin admin = new Admin();
+        int numeroDocumento = 12345; // <---------- CAMBIAR AQUI PARA SACAR LA INFO DE ALGUN USUARIO uwu
+
+        List<Object[]> resultado = admin.mostrarUsuarioTarjeta(numeroDocumento);
+
+        if (resultado.isEmpty()) {
+            System.out.println("No encontrado" + numeroDocumento);
+        } else {
+            for (Object[] fila : resultado) {
+                System.out.println("Tipo documento: " + fila[0]);
+                System.out.println("Ndocumento: " + fila[1]);
+                System.out.println("Nombres: " + fila[2]);
+                System.out.println("Apellidos: " + fila[3]);
+                System.out.println("Rol: " + fila[4]);
+                System.out.println("Cargo/Ficha: " + fila[5]);
+                System.out.println("Fecha emision: " + fila[6]);
+                System.out.println("Fecha expiracion: " + fila[7]);
+                System.out.println("Estado tarjeta: " + fila[8]);
+                System.out.println("Codigo tarjeta " + fila[9]);
+            }
+        }
     }
+
+
 }
