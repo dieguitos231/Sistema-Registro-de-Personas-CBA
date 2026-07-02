@@ -101,32 +101,38 @@ public class Main {
             char[] txtPassword = textPassword.getPassword();
             Usuario usuario = new Usuario();
             List<Object[]> dato = usuario.iniciarSesion(txtEmail, txtPassword);
+            Admin admin = new Admin();
+            if(dato.isEmpty()){
+                JOptionPane.showMessageDialog(null, "Datos Ingresados incorrectos!");
+            }else{
+                for (Object[] data : dato) {
+                    Integer n_documento = (Integer) data[0];
+                    String rol = (String) data[1];
+                    Boolean primerIngreso = (Boolean) data[2];
 
-            for (Object[] data : dato) {
-                Integer n_documento = (Integer) data[0];
-                String rol = (String) data[1];
-                Boolean primerIngreso = (Boolean) data[2];
-
-                if (primerIngreso.equals(true)) {
-                    primerIngreso(n_documento, rol);
-                } else {
-                    switch (rol) {
-                        case "administrador" -> {
-                            panelAdmin();
-                            Login.setVisible(false);
-                        }
-                        case "aprendiz" -> {
-                            panelUsuario();
-                            Login.setVisible(false);
-                        }
-                        case "funcionario" -> {
-                            panelUsuario();
-                            Login.setVisible(false);
+                    if (primerIngreso.equals(true)) {
+                        primerIngreso(n_documento, rol);
+                    } else {
+                        switch (rol) {
+                            case "administrador" -> {
+                                panelAdmin();
+                                Login.setVisible(false);
+                            }
+                            case "aprendiz" -> {
+                                List<Object[]>infTarjeta=admin.mostrarUsuarioTarjeta(n_documento);
+                                panelUsuario(infTarjeta);
+                                Login.setVisible(false);
+                            }
+                            case "funcionario" -> {
+                                List<Object[]>infTarjeta=admin.mostrarUsuarioTarjeta(n_documento);
+                                panelUsuario(infTarjeta);
+                                Login.setVisible(false);
+                            }
                         }
                     }
                 }
-            }
 
+            }
             textEmail.setText("");
             textPassword.setText("");
         });
@@ -298,6 +304,7 @@ public class Main {
         enviar.addActionListener(event -> {
             char[] passwordDigitada = password.getPassword();
             Usuario usuario = new Usuario();
+            Admin admin = new Admin();
             boolean actulizado = usuario.actualizarContrasena(passwordDigitada, n_documento);
             if(actulizado){
                 usuario.actualizarIngreso(n_documento);
@@ -307,10 +314,12 @@ public class Main {
                         panelAdmin();
                     }
                     case "aprendiz" ->{
-                        panelUsuario();
+                        List<Object[]> infoUsuario=admin.mostrarUsuarioTarjeta(n_documento);
+                        panelUsuario(infoUsuario);
                     }
                     case "funcionario" ->{
-                        panelUsuario();
+                        List<Object[]> infoUsuario=admin.mostrarUsuarioTarjeta(n_documento);
+                        panelUsuario(infoUsuario);
                     }
                 }
             }
@@ -629,7 +638,12 @@ public class Main {
             BuscarUsuario.dispose();
         });
         btnBuscar.addActionListener(event -> {
-            Integer numero = convertirNumero(n_documento.getText());
+            Integer numero=0;
+            if (n_documento.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Por favor ingrese el numero de identificacion");
+            }else{
+                numero = convertirNumero(n_documento.getText());
+            }
             Admin admin = new Admin();
             List<Object[]> lista = admin.mostrarUsuario(numero);
             if (lista.size() > 0) {
@@ -1201,31 +1215,39 @@ public class Main {
             panelUsuarios();
         });
         btnBuscar.addActionListener(event -> {
-            Integer numero = convertirNumero(numeroDigitado.getText());
-            numeroDigitado.setText("");
+            Integer numero=0;
+            if (numeroDigitado.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, "Por favor ingrese el numero de identificacion");
+            }else{
+                numero = convertirNumero(numeroDigitado.getText());
+                numeroDigitado.setText("");
+            }
             Admin admin = new Admin();
             List<Object[]> lista = admin.mostrarUsuario(numero);
-            for (Object[] arreglo : lista) {
-                infTipoId.setText(arreglo[0].toString());
-                infNumeroId.setText(arreglo[1].toString());
-                infNombre.setText(arreglo[2].toString() + " " + arreglo[3].toString());
-                infRol.setText(arreglo[4].toString());
-                if (arreglo[4].equals("aprendiz")) {
-                    Integer ficha = (Integer) arreglo[5];
-                    txt.setText("Ficha: ");
-                    info.setText(ficha.toString());
-                } else if (arreglo[4].equals("funcionario")) {
-                    String cargo = (String) arreglo[5];
-                    txt.setText("Cargo: ");
-                    info.setText(cargo);
+            if (lista.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Usuario no encontrado");
+            }else{
+                for (Object[] arreglo : lista) {
+                    infTipoId.setText(arreglo[0].toString());
+                    infNumeroId.setText(arreglo[1].toString());
+                    infNombre.setText(arreglo[2].toString() + " " + arreglo[3].toString());
+                    infRol.setText(arreglo[4].toString());
+                    if (arreglo[4].equals("aprendiz")) {
+                        Integer ficha = (Integer) arreglo[5];
+                        txt.setText("Ficha: ");
+                        info.setText(ficha.toString());
+                    } else if (arreglo[4].equals("funcionario")) {
+                        String cargo = (String) arreglo[5];
+                        txt.setText("Cargo: ");
+                        info.setText(cargo);
+                    }
                 }
             }
         });
 
         MostrarUsuario.setVisible(true);
     }
-    private void panelUsuario() {
-
+    private void panelUsuario(List<Object[]> info) {
         JFrame PanelUsuario = new JFrame();
 
         PanelUsuario.setTitle("Panel Usuario");
@@ -1249,25 +1271,21 @@ public class Main {
         );
 
 
-        String nombre = "Diego";
 
-
-        JLabel lblNombre = new JLabel("Nombre: " + nombre);
+        JLabel lblNombre = new JLabel();
         lblNombre.setForeground(Color.WHITE);
 
-        JLabel lblIdentificacion = new JLabel("T.I: 123456789");
+        JLabel lblIdentificacion = new JLabel();
         lblIdentificacion.setForeground(Color.WHITE);
-        JLabel lblRol = new JLabel("Rol: Administrador");
+        JLabel lblRol = new JLabel();
         lblRol.setForeground(Color.WHITE);
-        JLabel lblCargo = new JLabel("Cargo: Desarrollo");
-        lblCargo.setForeground(Color.WHITE);
-        JLabel lblEmision = new JLabel("Fecha Emisión: 29/06/2026");
+        JLabel lblEmision = new JLabel();
         lblEmision.setForeground(Color.WHITE);
-        JLabel lblExpiracion = new JLabel("Fecha Expiración: 29/06/2030");
+        JLabel lblExpiracion = new JLabel();
         lblExpiracion.setForeground(Color.WHITE);
-        JLabel lblEstado = new JLabel("Estado: Activo");
+        JLabel lblEstado = new JLabel();
         lblEstado.setForeground(Color.WHITE);
-        JLabel idTarjeta = new JLabel("DFG1031807049");
+        JLabel idTarjeta = new JLabel();
         idTarjeta.setForeground(Color.WHITE);
 
 
@@ -1275,7 +1293,6 @@ public class Main {
         lblNombre.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         lblIdentificacion.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         lblRol.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        lblCargo.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         lblEmision.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         lblExpiracion.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         lblEstado.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
@@ -1284,12 +1301,25 @@ public class Main {
         tarjeta.add(lblNombre);
         tarjeta.add(lblIdentificacion);
         tarjeta.add(lblRol);
-        tarjeta.add(lblCargo);
         tarjeta.add(lblEmision);
         tarjeta.add(lblExpiracion);
         tarjeta.add(lblEstado);
         tarjeta.add(idTarjeta);
 
+        for (Object[] arreglo : info) {
+            lblIdentificacion.setText(arreglo[0].toString()+":  "+arreglo[1].toString());
+            lblNombre.setText("Nombre: "+ (arreglo[2].toString()+" "+arreglo[3].toString()).toUpperCase());
+            if(arreglo[4].equals("aprendiz")){
+                lblRol.setText("Rol: "+arreglo[4].toString()+" "+"Ficha: "+arreglo[5].toString());
+            }
+            else if(arreglo[4].equals("funcionario")){
+                lblRol.setText("Rol: "+arreglo[4].toString()+" "+"Cargo: "+arreglo[5].toString());
+            }
+            lblEmision.setText("Fecha de emision: "+arreglo[6].toString());
+            lblExpiracion.setText("Fecha de expiracion: "+arreglo[7].toString());
+            lblEstado.setText("Estado : "+arreglo[8].toString().toUpperCase());
+            idTarjeta.setText(arreglo[9].toString());
+        }
         tarjeta.setBounds(40,60,500,220);
         Color colorSena = new Color(57, 169, 0);
         tarjeta.setBackground(colorSena);
@@ -1303,30 +1333,6 @@ public class Main {
         btnCerrarSesion.addActionListener(event-> PanelUsuario.dispose());
 
         PanelUsuario.setVisible(true);
-
-        //ELiminar apartir de aqui
-
-        Admin admin = new Admin();
-        int numeroDocumento = 12345; // <---------- CAMBIAR AQUI PARA SACAR LA INFO DE ALGUN USUARIO uwu
-
-        List<Object[]> resultado = admin.mostrarUsuarioTarjeta(numeroDocumento);
-
-        if (resultado.isEmpty()) {
-            System.out.println("No encontrado" + numeroDocumento);
-        } else {
-            for (Object[] fila : resultado) {
-                System.out.println("Tipo documento: " + fila[0]);
-                System.out.println("Ndocumento: " + fila[1]);
-                System.out.println("Nombres: " + fila[2]);
-                System.out.println("Apellidos: " + fila[3]);
-                System.out.println("Rol: " + fila[4]);
-                System.out.println("Cargo/Ficha: " + fila[5]);
-                System.out.println("Fecha emision: " + fila[6]);
-                System.out.println("Fecha expiracion: " + fila[7]);
-                System.out.println("Estado tarjeta: " + fila[8]);
-                System.out.println("Codigo tarjeta " + fila[9]);
-            }
-        }
     }
 
 

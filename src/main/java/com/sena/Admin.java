@@ -11,16 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Admin {
-    private Boolean convertirABoolean(Object valor) {
-        if (valor == null) return null;
-        if (valor instanceof Boolean) return (Boolean) valor;
-        if (valor instanceof String) {
-            String texto = ((String) valor).trim().toLowerCase();
-            return texto.equals("true") || texto.equals("t") || texto.equals("1");
-        }
-        if (valor instanceof Number) return ((Number) valor).intValue() != 0;
-        return null;
-    }
     public void crearUsuarioAprendiz(String tipo_documento,int n_documento,String nombres,String apellidos, String correo_electronico, String password, int ficha){
         String query1 = "INSERT INTO usuario(n_documento,correo_electronico,password,rol) VALUES(?,?,crypt(?,gen_salt('bf')),'aprendiz')";
         String query2 = "INSERT INTO detalle_usuario(tipo_documento,n_documento,nombres,apellidos) VALUES(?,?,?,?) RETURNING fecha_creacion";
@@ -257,7 +247,8 @@ public class Admin {
                         arreglo[5] = rs.getInt("ficha");
                         arreglo[6] = rs.getDate("fecha_emision");
                         arreglo[7] = rs.getDate("fecha_expiracion");
-                        arreglo[8] = convertirABoolean(rs.getObject("estado"));                        arreglo[9] = rs.getString("codigo_tarjeta");
+                        arreglo[8] = rs.getBoolean("estado");
+                        arreglo[9] = rs.getString("codigo_tarjeta");
                         listaUsuario.add(arreglo);
                     }
                 }
@@ -275,7 +266,7 @@ public class Admin {
                         arreglo[5] = rs.getString("cargo");
                         arreglo[6] = rs.getDate("fecha_emision");
                         arreglo[7] = rs.getDate("fecha_expiracion");
-                        arreglo[8] = (Boolean) rs.getObject("estado");
+                        arreglo[8] = rs.getBoolean("estado");
                         arreglo[9] = rs.getString("codigo_tarjeta");
                         listaUsuario.add(arreglo);
                     }
